@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { DetailedHTMLProps, LegacyRef, MutableRefObject, useEffect, useRef, useState, VideoHTMLAttributes } from 'react'
+import { DetailedHTMLProps, LegacyRef, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState, VideoHTMLAttributes } from 'react'
 import styles from '../styles/Home.module.css'
 import { FileUploader } from 'baseui/file-uploader';
 import { Button } from 'baseui/button';
@@ -9,6 +9,7 @@ import { Input } from 'baseui/input';
 import ffmpeg from '../components/ffmpeg';
 import { fetchFile } from '@ffmpeg/ffmpeg';
 
+
 const Home: NextPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -16,11 +17,11 @@ const Home: NextPage = () => {
   const [isMovingTimeline, setIsMovingTimeline] = useState(false);
   const [videoTimelinePos, setVideoTimelinePos] = useState(0);
   const [timelineMouseOffset, setTimelineMouseOffset] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [timelineWidth, setTimelineWidth] = useState(900);
 
   const [videoFile, setVideoFile] = useState<File>();
   const [audioFile, setAudioFile] = useState<File>();
-
-  const [interestingAudioPoint, setInterestingAudioPoint] = useState<string>('');
 
   const [result, setResult] = useState<string>('');
 
@@ -36,7 +37,11 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (videoRef.current) {
-
+      if (videoRef.current.duration) {
+        const width = videoRef.current.duration * 60;
+        setTimelineWidth(width) // i.e. 60 pixels per second of footage
+      }
+      
     }
   }, [videoRef])
 
@@ -67,18 +72,6 @@ const Home: NextPage = () => {
     setResult(url);
   }
 
-  const displayVideo = () => {
-    if (videoFile) {
-      return <div style={{
-        height: 350,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <video ref={videoRef} controls={false} width={500} src={URL.createObjectURL(videoFile)} />
-      </div>
-    }
-  }
 
   const loadFile = async (file: File) => {
     await checkFfmpeg();
@@ -89,8 +82,36 @@ const Home: NextPage = () => {
     } else {
       setVideoFile(file);
       ffmpeg.FS('writeFile', 'video', await fetchFile(file));
+      setVideoTimelinePos(timelineWidth/2);
     }
   }
+
+  const memoizedVideoPlayer = useMemo(() => {
+    if (videoFile) {
+      return <div style={{
+        height: 350,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <video ref={videoRef}
+          controls={false} width={500} src={URL.createObjectURL(videoFile)}
+          onPlaying={(event) => {
+            setIsVideoPlaying(true);
+          }}
+          onPause={(event) => {
+            setIsVideoPlaying(false);
+          }}
+          onTimeUpdate={(event) => {
+            const videoTrackCompletionPercentage = event.currentTarget.currentTime / event.currentTarget.duration;
+            const durationInPixels = videoTrackCompletionPercentage * timelineWidth;
+            const timelinePos = durationInPixels - (timelineWidth/2) // center
+            setVideoTimelinePos(-timelinePos);
+          }}
+        />
+      </div>
+    }
+  }, [videoFile])
 
   return (
     <div style={{
@@ -113,16 +134,7 @@ const Home: NextPage = () => {
         />
       </div>
 
-      {videoFile ? <>
-        <div style={{
-          height: 350,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <video ref={videoRef} controls={false} width={500} src={URL.createObjectURL(videoFile)} />
-        </div>
-      </> : <></>}
+      {memoizedVideoPlayer}
 
       {videoFile ? <>
         <div style={{
@@ -141,14 +153,14 @@ const Home: NextPage = () => {
             position: 'absolute',
             borderRadius: 5,
             zIndex: 999,
-            transform: 'translateX(-1.5px)'
+            transform: 'translateX(-1.5px)',
           }} />
           <div style={{
-            width: 600,
-            height: 50,
+            width: timelineWidth || 0,
+            height: 36,
             position: 'absolute',
             backgroundColor: '#282915',
-            left: (window.innerWidth / 2) - 300,
+            left: (window.innerWidth / 2) - (timelineWidth/2),
             transform: `translateX(${videoTimelinePos}px)`,
             border: '2px solid #BECE07',
             borderRadius: 6,
@@ -156,32 +168,37 @@ const Home: NextPage = () => {
           }}
             onMouseDown={(mouseEvt) => {
               setIsMovingTimeline(true);
-              const offset = mouseEvt.clientX - window.innerWidth / 2;
+              const offset = (mouseEvt.clientX - window.innerWidth / 2) - videoTimelinePos;
               setTimelineMouseOffset(offset);
             }}
             onMouseMove={(mouseEvent) => {
               if (isMovingTimeline) {
-                const newRelativePosition = mouseEvent.clientX - window.innerWidth / 2 - timelineMouseOffset;
-                // console.log(mouseEvent.clientX, timelineMouseOffset, newRelativePosition);
-                setVideoTimelinePos(newRelativePosition);
+                const newRelativePosition =  (mouseEvent.clientX - (window.innerWidth / 2)) - timelineMouseOffset;
+                if (newRelativePosition <= timelineWidth/2 && newRelativePosition >= -timelineWidth/2) {
+                  setVideoTimelinePos(newRelativePosition);
+                }
+                if (videoRef.current) {
+                  const time = (timelineWidth/2) - newRelativePosition;
+                  const ratio = time / timelineWidth;
+                  const timeToSet = videoRef.current.duration * ratio;
+                  videoRef.current.currentTime = timeToSet || 0;
+                }
               }
             }}
             onMouseUp={() => {
-              // calculate time to set video to
-
-              if (videoRef.current) {
-                const time = 300 - videoTimelinePos;
-                const ratio = time / 600;
-                const timeToSet = videoRef.current.duration * ratio;
-                videoRef.current.play();
-                // videoRef.current.currentTime = timeToSet;
-                console.log(timeToSet);
-              }
-
               setIsMovingTimeline(false);
             }}
           />
-          <div style={{ width: 600, height: 90 }} />
+          <div style={{ width: timelineWidth, height: 90 }} />
+        </div>
+        <div style={{display: 'flex', justifyContent: 'center',}}>
+          <Button onClick={() => {
+            if (!isVideoPlaying) {
+              videoRef.current?.play();
+            } else {
+              videoRef.current?.pause();
+            }
+          }}>{ !isVideoPlaying ?  "Play" : "Pause" }</Button>
         </div>
       </> : <></>}
 
