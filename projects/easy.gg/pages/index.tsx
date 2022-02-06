@@ -15,6 +15,7 @@ const Home: NextPage = () => {
 
   const [isMovingTimeline, setIsMovingTimeline] = useState(false);
   const [videoTimelinePos, setVideoTimelinePos] = useState(0);
+  const [timelineMouseOffset, setTimelineMouseOffset] = useState(0);
 
   const [videoFile, setVideoFile] = useState<File>();
   const [audioFile, setAudioFile] = useState<File>();
@@ -68,8 +69,13 @@ const Home: NextPage = () => {
 
   const displayVideo = () => {
     if (videoFile) {
-      return <div style={{height: 300}}>
-        <video ref={videoRef} controls width={500} src={URL.createObjectURL(videoFile)} />
+      return <div style={{
+        height: 350,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <video ref={videoRef} controls={false} width={500} src={URL.createObjectURL(videoFile)} />
       </div>
     }
   }
@@ -107,7 +113,16 @@ const Home: NextPage = () => {
         />
       </div>
 
-      {displayVideo()}
+      {videoFile ? <>
+        <div style={{
+          height: 350,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <video ref={videoRef} controls={false} width={500} src={URL.createObjectURL(videoFile)} />
+        </div>
+      </> : <></>}
 
       {videoFile ? <>
         <div style={{
@@ -116,15 +131,17 @@ const Home: NextPage = () => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: 200,
+          height: 120,
         }}>
           <div style={{
             width: 3,
+            cursor: 'pointer',
             backgroundColor: '#52FF00',
             height: 90,
             position: 'absolute',
             borderRadius: 5,
             zIndex: 999,
+            transform: 'translateX(-1.5px)'
           }} />
           <div style={{
             width: 600,
@@ -137,18 +154,30 @@ const Home: NextPage = () => {
             borderRadius: 6,
             cursor: 'pointer',
           }}
-            onMouseDown={() => {
+            onMouseDown={(mouseEvt) => {
               setIsMovingTimeline(true);
+              const offset = mouseEvt.clientX - window.innerWidth / 2;
+              setTimelineMouseOffset(offset);
             }}
             onMouseMove={(mouseEvent) => {
               if (isMovingTimeline) {
-                setVideoTimelinePos(mouseEvent.clientX - 300);
+                const newRelativePosition = mouseEvent.clientX - window.innerWidth / 2 - timelineMouseOffset;
+                // console.log(mouseEvent.clientX, timelineMouseOffset, newRelativePosition);
+                setVideoTimelinePos(newRelativePosition);
               }
             }}
-            onMouseLeave={() => {
-              setIsMovingTimeline(false);
-            }}
             onMouseUp={() => {
+              // calculate time to set video to
+
+              if (videoRef.current) {
+                const time = 300 - videoTimelinePos;
+                const ratio = time / 600;
+                const timeToSet = videoRef.current.duration * ratio;
+                videoRef.current.play();
+                // videoRef.current.currentTime = timeToSet;
+                console.log(timeToSet);
+              }
+
               setIsMovingTimeline(false);
             }}
           />
