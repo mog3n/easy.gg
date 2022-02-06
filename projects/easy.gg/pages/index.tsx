@@ -12,10 +12,12 @@ import { fetchFile } from '@ffmpeg/ffmpeg';
 const Home: NextPage = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const [file, setFile] = useState<File>();
+  const [videoFile, setVideoFile] = useState<File>();
   const [audioFile, setAudioFile] = useState<File>();
 
   const [interestingAudioPoint, setInterestingAudioPoint] = useState<string>('');
+
+  const [result, setResult] = useState<string>('');
 
   const checkFfmpeg = async () => {
     if (!ffmpeg.isLoaded()) {
@@ -27,14 +29,36 @@ const Home: NextPage = () => {
     checkFfmpeg();
   }, [])
 
-  const generateVideo = () => {
-    checkFfmpeg();
-    ffmpeg.run('-i', 'video', '-f', 'output.mp4');
+  const generateVideo = async () => {
+    await checkFfmpeg();
+
+    await ffmpeg.run(
+      '-i', 'video',
+      '-ss', '00:00:00',
+      '-t', '8',
+      '-r', '30',
+      'tmp1.mp4'
+    );
+
+    await ffmpeg.run(
+      '-i', 'tmp1.mp4',
+      '-i', 'audio',
+      '-filter_complex', '[1:a]apad[A],[0:a][A]amerge[out]',
+      '-map', '0:v',
+      '-map', '[out]',
+      '-c:v', 'copy',
+      '-c:a', 'aac',
+      'output.mp4'
+    );
+
+    const data = ffmpeg.FS('readFile', 'output.mp4');
+    const url = URL.createObjectURL(new Blob([data.buffer]));
+    setResult(url);
   }
 
   const displayVideo = () => {
-    if (file) {
-      return <video controls width={500} src={URL.createObjectURL(file)} />
+    if (videoFile) {
+      return <video controls width={500} src={URL.createObjectURL(videoFile)} />
     }
   }
 
@@ -43,9 +67,9 @@ const Home: NextPage = () => {
 
     if (file.name.includes('mp3')) {
       setAudioFile(file);
-      ffmpeg.FS('writeFile', 'sound', await fetchFile(file));
+      ffmpeg.FS('writeFile', 'audio', await fetchFile(file));
     } else {
-      setFile(file);
+      setVideoFile(file);
       ffmpeg.FS('writeFile', 'video', await fetchFile(file));
     }
   }
@@ -71,16 +95,20 @@ const Home: NextPage = () => {
       {displayVideo()}
 
       { audioFile ? <>
-        <Input value={interestingAudioPoint} onChange={(evt) => {
+        <Input placeholder='Interesting point in audio' value={interestingAudioPoint} onChange={(evt) => {
           const target = evt.target as HTMLInputElement;
           setInterestingAudioPoint(target.value)
         }} />
       </> : <></>}
 
-      {audioFile && file ? <>
+      {audioFile && videoFile ? <>
         <div>
           <Button onClick={generateVideo}>Generate Video</Button>
         </div>
+      </> : <></>}
+      
+      {result ? <>
+        <video style={{width: 300}} controls src={result} />
       </> : <></>}
 
     </div>
