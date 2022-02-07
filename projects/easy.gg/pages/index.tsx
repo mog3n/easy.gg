@@ -335,7 +335,7 @@ const Home: NextPage = () => {
         {isGeneratingVideo ? <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
               <ProgressBar showLabel getProgressLabel={(value) => {
-                return `${Math.round(value)}% Rendered (of many files)`
+                return `${Math.round(value)}% Rendered (of a few files)`
               }} value={Math.min(Math.max(ffmpegProgress*100, 0), 100)}/>
               <div style={{color: '#c7c7c7', marginTop: 10}}>Grab a G-FUEL while your clip is being rendered!</div>
             </div>
