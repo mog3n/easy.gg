@@ -17,7 +17,7 @@ const Home: NextPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [videoMarkerDuration, setVideoMarkerDuration] = useState(22.405);
+  const [videoMarkerDuration, setVideoMarkerDuration] = useState(24.340597);
   const [audioMarkerDuration, setAudioMarkerDuration] = useState(4.26);
 
   const [isMovingTimeline, setIsMovingTimeline] = useState(false);
@@ -29,7 +29,7 @@ const Home: NextPage = () => {
   const [videoFile, setVideoFile] = useState<File>();
   const [audioFile, setAudioFile] = useState<File>();
 
-  const [result, setResult] = useState<string>('');
+  const [results, setResults] = useState<string[]>([]);
 
   const checkFfmpeg = async () => {
     if (!ffmpeg.isLoaded()) {
@@ -62,32 +62,66 @@ const Home: NextPage = () => {
       ffmpeg.FS('writeFile', 'video', vFile);
 
       const videoCropLeft = videoMarkerDuration - audioMarkerDuration;
-      const tDuration = audioRef.current.duration;
+      const audioDuration = audioRef.current.duration;
 
+      // before the shot
       await ffmpeg.run(
-        '-i', 'video',
         '-ss', videoCropLeft.toFixed(2),
-        '-vf', 'scale=1280:720',
+        '-t', audioMarkerDuration.toString(),
+
+        '-i', 'video',
         '-c:v', 'libx264',
-        '-t', tDuration.toString(),
-        '-r', FRAMERATE.toString(), //framerate
-        'tmp1.mp4'
+        '-r', FRAMERATE.toString(),
+        'A.mp4'
+      );
+      
+      const SLOWMOFACTOR = 2;
+
+      const slowMoEnd = ((audioDuration - audioMarkerDuration) / SLOWMOFACTOR).toFixed(2);
+      // trim slow mo part
+      await ffmpeg.run(
+        '-ss', videoMarkerDuration.toFixed(2),
+        '-t', slowMoEnd,
+        '-i', 'video',
+        '-c:v', 'libx264',
+        '-r', FRAMERATE.toString(),
+        'B.mp4'
+      )
+
+      // make clip B slo mo
+      await ffmpeg.run(
+        '-i', 'B.mp4',
+        '-filter_complex', `
+                              [0:v]setpts=${SLOWMOFACTOR}*PTS[slowchoppy],
+                              [slowchoppy]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=30'[slow]
+                            `,
+        '-map', '[slow]',
+        '-c:v', 'libx264',
+        'B-slowed.mp4',
       );
 
       await ffmpeg.run(
-        '-i', 'tmp1.mp4',
+        '-i', 'A.mp4',
+        '-i', 'B-slowed.mp4',
         '-i', 'audio',
-        '-filter_complex', '[0:a][1:a]amerge[out]',
-        '-map', '0:v',
+        
+        '-filter_complex', `
+                                [0:v][0:a][1:v]concat=n=2:v=1:a=1[vcomb][acomb],
+                                [acomb][2:a]amerge=inputs=2[out]`,
+        '-map', '[vcomb]',
         '-map', '[out]',
-        '-c:v', 'copy',
+        '-c:v', 'libx264',
         '-c:a', 'aac',
         'output.mp4'
       );
 
+      const slowmo = ffmpeg.FS('readFile', 'B-slowed.mp4');
+      const url2 = URL.createObjectURL(new Blob([slowmo.buffer]));
+
       const data = ffmpeg.FS('readFile', 'output.mp4');
       const url = URL.createObjectURL(new Blob([data.buffer]));
-      setResult(url);
+      
+      setResults([...results, url, url2]);
     } else {
       alert("No video or audio file");
     }
@@ -282,8 +316,16 @@ const Home: NextPage = () => {
         </div>
       </> : <></>}
 
-      {result ? <>
+      {results ? <>
+      
+      <div style={{display: 'flex',}}>
+
+      {results.map(result => (<>
         <video style={{ width: 300 }} controls src={result} />
+      </>))}
+
+      </div>
+      
       </> : <></>}
 
     </div>
