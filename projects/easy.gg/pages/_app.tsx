@@ -6,7 +6,7 @@ import { styletron } from '../components/styletron';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return <StyletronProvider value={styletron} debugAfterHydration>
-    <BaseProvider theme={DarkTheme}>
+    <BaseProvider theme={LightTheme}>
     <Component {...pageProps} />
     </BaseProvider>
   </StyletronProvider>
