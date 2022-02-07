@@ -149,13 +149,10 @@ const Home: NextPage = () => {
           'output.mp4'
         );
 
-        const slowmo = ffmpeg.FS('readFile', 'B-slowed.mp4');
-        const url2 = URL.createObjectURL(new Blob([slowmo.buffer]));
-
         const data = ffmpeg.FS('readFile', 'output.mp4');
         const url = URL.createObjectURL(new Blob([data.buffer]));
 
-        setResults([...results, url, url2]);
+        setResults([...results, url]);
         setIsGeneratingVideo(false);
       } catch (e) {
         console.error(e);
@@ -289,6 +286,7 @@ const Home: NextPage = () => {
             backgroundColor: '#52FF00',
             height: 90,
             position: 'absolute',
+            pointerEvents: 'none',
             borderRadius: 5,
             zIndex: 999,
             transform: 'translateX(-1.5px)',
@@ -326,6 +324,9 @@ const Home: NextPage = () => {
             onMouseUp={() => {
               setIsMovingTimeline(false);
             }}
+            onMouseLeave={() => {
+              setIsMovingTimeline(false);
+            }}
           />
           <div style={{ width: timelineWidth, height: 90 }} />
         </div>
@@ -336,7 +337,7 @@ const Home: NextPage = () => {
               <ProgressBar showLabel getProgressLabel={(value) => {
                 return `${Math.round(value)}% Rendered (of many files)`
               }} value={Math.min(Math.max(ffmpegProgress*100, 0), 100)}/>
-              <div style={{color: '#c7c7c7', marginTop: 10}}>Grab a G-FUEL while your video is being rendered!</div>
+              <div style={{color: '#c7c7c7', marginTop: 10}}>Grab a G-FUEL while your clip is being rendered!</div>
             </div>
         </> : <>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
@@ -346,7 +347,7 @@ const Home: NextPage = () => {
                 setVideoMarkerDuration(videoRef.current.currentTime);
                 generateVideo();
               }
-            }}>Continue</Button>
+            }}>Mark</Button>
           </div>
         </>}
 
