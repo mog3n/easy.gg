@@ -107,7 +107,7 @@ const Home: NextPage = () => {
           'A.mp4'
         );
 
-        const SLOWMOFACTOR = 2;
+        const SLOWMOFACTOR = 4;
 
         const slowMoEnd = ((audioDuration - audioMarkerDuration) / SLOWMOFACTOR).toFixed(2);
 
