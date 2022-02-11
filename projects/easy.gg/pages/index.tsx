@@ -107,7 +107,7 @@ const Home: NextPage = () => {
           'A.mp4'
         );
 
-        const SLOWMOFACTOR = 4;
+        const SLOWMOFACTOR = 2;
 
         const slowMoEnd = ((audioDuration - audioMarkerDuration) / SLOWMOFACTOR).toFixed(2);
 
@@ -125,18 +125,38 @@ const Home: NextPage = () => {
         // make clip B slo mo
         await ffmpeg.run(
           '-i', 'B.mp4',
-          '-filter_complex', `
-                              [0:v]setpts=${SLOWMOFACTOR}*PTS[slowchoppy],
-                              [slowchoppy]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=30'[slow]
+          '-filter_complex', 
+                            // `
+                            //   [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=${SLOWMOFACTOR}*30'[interp],
+                            //   [interp]setpts=${SLOWMOFACTOR}*PTS[slow]
+                            // `,
+                            `
+                            [0:v]setpts=${SLOWMOFACTOR}*PTS[slowchoppy],
+                            [slowchoppy]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=30'[slow]
                             `,
           '-map', '[slow]',
           '-c:v', 'libx264',
           'B-slowed.mp4',
         );
+        
+        // // change the hue
+        // await ffmpeg.run(
+        //   '-i', 'B-slowed.mp4',
+        //   '-vf', 'hue=h=45:s=2',
+        //   'B-slow-edited.mp4'
+        // );
 
+        // animate the hue
+        await ffmpeg.run(
+          '-i', 'B-slowed.mp4',
+          '-vf', 'hue=H=2*PI*t:s=cos(2*PI*t)+10',
+          // 'colorize=hue=2*PI*t:lightness=sin(2*PI*t)+1',
+          'B-slow-edited.mp4'
+        );
+        
         await ffmpeg.run(
           '-i', 'A.mp4',
-          '-i', 'B-slowed.mp4',
+          '-i', 'B-slow-edited.mp4',
           '-i', 'audio',
 
           '-filter_complex', `
