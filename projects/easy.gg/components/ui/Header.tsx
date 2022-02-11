@@ -1,11 +1,47 @@
 import Image from 'next/image'
 import styled from 'styled-components'
 
+const HeaderContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+`
+const HeaderItems = styled.div`
+    display: flex;
+    flex: 1;
+    max-width: 1200px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    @media (max-width: 600px) {
+        padding-left: 20px;
+    }
+`
+
+const HeaderLogo = styled.img`
+    width: 69px;
+    height: 60px;
+    margin: 10px;
+    @media (max-width: 600px) {
+        width: 52px;
+        margin: 0;
+    }
+`
+const BetaTestButton = styled.img`
+    display: block;
+    width: 181px;
+    @media (max-width: 600px) {
+        width: 160px;
+    }
+`
+
 export const Header = (props: any) => {
-    return <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-        <div style={{display: 'flex', flex:1, maxWidth: '1200px', justifyContent: 'space-between', alignItems: 'center'}}>
-            <Image src="/logo.svg" height={89} width={69} alt="Logo" />
-            <a href="https://discord.com/invite/P8kdG7XD5M"><Image src="/joinbetatest.svg" height={54} width={181} alt="Logo" /></a>
-        </div>
-    </div>
+    return <HeaderContainer>
+        <HeaderItems>
+            <HeaderLogo src="/logo.svg" alt="Logo" />
+            <a href="https://discord.com/invite/P8kdG7XD5M">
+                <BetaTestButton src="/joinbetatest.svg" alt="Join Beta Button"/>
+            </a>
+        </HeaderItems>
+    </HeaderContainer>
 }

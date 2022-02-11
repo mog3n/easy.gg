@@ -1,0 +1,1 @@
+export const LANDING_MOBILE_BREAKPOINT = '700px';
