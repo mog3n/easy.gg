@@ -155,7 +155,7 @@ const Home: NextPage = () => {
 
         <HeroContainer style={{paddingTop: 0}}>
             <HeroText2>Interested in joining?</HeroText2>
-            <JoinInstructions>Join our Discord server to reserve a spot in our upcoming <font color="#BCF08E"><b>EZ.GG</b></font> closed beta.</JoinInstructions>
+            <JoinInstructions>Join our Discord server to reserve a spot in our upcoming <span style={{color:'#BCF08E',font:'bold'}}>EZ.GG</span> closed beta.</JoinInstructions>
             <div style={{ height: 30 }} />
             <a href="https://discord.com/invite/P8kdG7XD5M"><Image src="/joinbutton.svg" width={276} height={54} alt="Join beta test" /></a>
         </HeroContainer>
