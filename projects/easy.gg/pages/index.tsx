@@ -36,9 +36,11 @@ const HeroText2 = styled.div`
     text-align: center;
     margin-top: -20px;
     font-family: 'Righteous';
-    font-size: 64px;
-    color: rgba(0,0,0,0.0);
-    -webkit-text-stroke: 1px #52FF00;
+    font-size: 64px;  
+    color: #232d2d;
+    background: -webkit-linear-gradient(#BCF08E 0%, #92E6B1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-stroke: 4px transparent; 
     margin-bottom: 30px;
     @media (max-width: ${LANDING_MOBILE_BREAKPOINT}) {
         padding-left: 10px;
@@ -126,26 +128,30 @@ const Home: NextPage = () => {
             <HeroText1>Professional gaming clips</HeroText1>
             <HeroText2>in seconds.</HeroText2>
                 <EditorMobile src="/editormobile.svg" alt="Editor" />
-                <Editor src="/editor.svg" alt="Editor" />
+                <Editor src="/editorb.svg" alt="Editor" />
         </HeroContainer>
 
         <VideoHeroContainer>
             <VideoHeroComponentLeft>
                 <DesktopSpacing1 />
-                <Image src="/landing/2.svg" width={294} height={118} alt="Effortless editing tools" />
+                <Image src="/landing/2b.svg" width={294} height={118} alt="Effortless editing tools" />
             </VideoHeroComponentLeft>
             <VideoHeroComponent>
                 <video src="/landing/hospital.mp4" style={{ width: 300, borderRadius: 10 }} autoPlay muted loop />
             </VideoHeroComponent>
             <VideoHeroComponentRight>
                 <DesktopSpacing2 />
-                <Image src="/landing/1.svg" width={294} height={118} alt="Grow your audience" />
+                <Image src="/landing/1b.svg" width={294} height={118} alt="Grow your audience" />
                 <DesktopSpacing3 />
-                <Image src="/landing/3.svg" width={294} height={118} alt="Drag and drop" />
+                <Image src="/landing/3b.svg" width={294} height={118} alt="Drag and drop" />
             </VideoHeroComponentRight>
         </VideoHeroContainer>
 
         <DesktopSpacing2 />
+
+        <VideoHeroContainer>
+            <Image src="/landing/madeForVal.svg" width={294} height={118} alt="Made for Valorant" />
+        </VideoHeroContainer>
 
         <HeroContainer style={{paddingTop: 0}}>
             <HeroText2>Interested in joining?</HeroText2>
