@@ -161,6 +161,7 @@ const Edit: NextPage = () => {
         // await ffmpeg.run(
         //   '-i', 'B-slowed.mp4',
         //   '-vf', `hue=H=2:'b=max(0,5-5*t)'`, // << test this
+        //   'B-slow-edited.mp4'
         // );
 
         await ffmpeg.run(
