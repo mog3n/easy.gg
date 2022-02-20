@@ -3,7 +3,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: '/edit',
         headers: [
           {
             key: 'Cross-Origin-Embedder-Policy',
@@ -15,6 +15,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/import',
+        headers: [
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'cross-origin',
+          }
+        ]
+      }
     ]
   },
 }
