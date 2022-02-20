@@ -1,21 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios';
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-
-puppeteer.use(StealthPlugin());
+import { requireGetParam } from '../../../helpers/api/helpers';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const twitchURL = req.body.twitchURL as string;
-  // TODO: Validate this is a twitch url
-  // BillowingDreamyEmuWow-7TeTPOchrEX_gdvn
-  if (!twitchURL) {
-    res.status(400).send({error: "bruh tf is this u send me"});
-  }
+  const twitchURL = requireGetParam('twitchURL', 'Require a valid twitch url', req, res);
+  
   const urlArray = twitchURL.split("/")
   const slug = urlArray[urlArray.length-1];
 
