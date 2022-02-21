@@ -107,7 +107,7 @@ const Edit: NextPage = () => {
           'A.mp4'
         );
 
-        const SLOWMOFACTOR = 4;
+        const SLOWMOFACTOR = 2;
 
         const slowMoEnd = ((audioDuration - audioMarkerDuration) / SLOWMOFACTOR).toFixed(2);
 
@@ -134,9 +134,39 @@ const Edit: NextPage = () => {
           'B-slowed.mp4',
         );
 
+        // animate the hue
+        await ffmpeg.run(
+          '-i', 'B-slowed.mp4',
+          '-vf', `hue='b=max(0,5-5*t)'`,
+          // '-vf', 'colorize=hue=1:lightness=max(1,4-2t)',
+          // '-vf', 'hue=H=2*PI*t:s=cos(2*PI*t)+10',
+          'B-slow-edited.mp4'
+        );
+
+        // // animate the hue (RAINBOW EFFECT)
+        // await ffmpeg.run(
+        //   '-i', 'B-slowed.mp4',
+        //   '-vf', 'hue=H=2*PI*t:s=cos(2*PI*t)+10',
+        //   'B-slow-edited.mp4'
+        // );
+
+        // // animate the hue (CHANGE HUE EFFECT)
+        // await ffmpeg.run(
+        //   '-i', 'B-slowed.mp4',
+        //   '-vf', 'hue=H=2*PI*t:s=cos(2*PI*t)+10',
+        //   'B-slow-edited.mp4'
+        // );
+
+        // // animate the hue (CHANGE HUE + BRIGHTNESS EFFECT)
+        // await ffmpeg.run(
+        //   '-i', 'B-slowed.mp4',
+        //   '-vf', `hue=H=2:'b=max(0,5-5*t)'`, // << test this
+        //   'B-slow-edited.mp4'
+        // );
+
         await ffmpeg.run(
           '-i', 'A.mp4',
-          '-i', 'B-slowed.mp4',
+          '-i', 'B-slow-edited.mp4',
           '-i', 'audio',
 
           '-filter_complex', `
