@@ -52,3 +52,26 @@ export interface TwitchCreator {
 export interface SearchTwitchCreatorResponse {
     data: TwitchCreator[]
 }
+
+interface VideoQuality {
+    framerate: number;
+    quality: string;
+    sourceURL: string;
+}
+
+interface PlaybackAccessToken {
+    signature: string;
+    value: string;
+}
+
+export interface ClipVideoData {
+    id: string;
+    videoQualities: VideoQuality[];
+    playbackAccessToken: PlaybackAccessToken;
+}
+
+export interface ClipVideoDataResponse {
+    data: {
+        clip: ClipVideoData
+    }
+}

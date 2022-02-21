@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { QueryFunctionContext, useQuery } from "react-query"
 import { TWITCH_API_URL } from "../../constants";
-import { GetTwitchClipsResponse, SearchTwitchCreatorResponse } from "../../types/twitchTypes";
+import { ClipVideoDataResponse, GetTwitchClipsResponse, SearchTwitchCreatorResponse } from "../../types/twitchTypes";
 
 export const useGetTwitchClipsFromBroadcasterID = (broadcaster_id: string) => {
     return useQuery<AxiosResponse<GetTwitchClipsResponse>>(
@@ -30,10 +30,10 @@ export const useSearchTwitchCreators = (query: string) => {
 }
 
 export const useGetClipMP4Data = (twitchClipURL: string) => {
-    return useQuery<AxiosResponse<SearchTwitchCreatorResponse>>(
+    return useQuery<AxiosResponse<ClipVideoDataResponse>>(
         ['search_creators', twitchClipURL],
         (queryContext => {
-            return axios.get<SearchTwitchCreatorResponse>('/api/twitch/getClipVideoData', {
+            return axios.get<ClipVideoDataResponse>('/api/twitch/getClipVideoData', {
                 params: {
                     twitchURL: twitchClipURL
                 }
