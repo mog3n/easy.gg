@@ -13,6 +13,7 @@ import ffmpeg from '../components/ffmpeg';
 import { fetchFile } from '@ffmpeg/ffmpeg';
 import { convertSecondsToTimestamp } from '../helpers/helpers';
 import { ProgressBar } from 'baseui/progress-bar';
+import { useRouter } from 'next/router';
 
 interface SimpleSoundClip {
   audioURL: string,
@@ -45,6 +46,7 @@ const Edit: NextPage = () => {
   const [ffmpegProgress, setFfmpegProgress] = useState<number>(0);
 
   const [results, setResults] = useState<string[]>([]);
+  const router = useRouter();
 
   const checkFfmpeg = async () => {
     if (!ffmpeg.isLoaded()) {
@@ -60,6 +62,14 @@ const Edit: NextPage = () => {
       const sound = await fetch(new Request(hospitalFlick.audioURL));
       const soundBlob = await sound.blob();
       setAudioFile(new File([soundBlob], "soundfile"));
+
+      // check router for params
+      if (router.query.clip) {
+        const blobUrl = router.query.clip as string;
+        console.log(blobUrl);
+        const blob = await axios.get(blobUrl, { responseType: 'blob' })
+        setVideoFile(new File([blob.data], 'videoFile'));
+      }
     }
     asyncEffect();
 
@@ -67,6 +77,8 @@ const Edit: NextPage = () => {
       console.log(progress);
       setFfmpegProgress(progress.ratio);
     })
+
+
 
   }, [])
 
@@ -363,12 +375,12 @@ const Edit: NextPage = () => {
 
 
         {isGeneratingVideo ? <>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
-              <ProgressBar showLabel getProgressLabel={(value) => {
-                return `${Math.round(value)}% Rendered (of a few files)`
-              }} value={Math.min(Math.max(ffmpegProgress*100, 0), 100)}/>
-              <div style={{color: '#c7c7c7', marginTop: 10}}>Grab a G-FUEL while your clip is being rendered!</div>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
+            <ProgressBar showLabel getProgressLabel={(value) => {
+              return `${Math.round(value)}% Rendered (of a few files)`
+            }} value={Math.min(Math.max(ffmpegProgress * 100, 0), 100)} />
+            <div style={{ color: '#c7c7c7', marginTop: 10 }}>Grab a G-FUEL while your clip is being rendered!</div>
+          </div>
         </> : <>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
             {/* { videoMarkerDuration ? convertSecondsToTimestamp(videoMarkerDuration, 30) : '0' } */}
@@ -381,7 +393,7 @@ const Edit: NextPage = () => {
           </div>
         </>}
 
-        
+
       </> : <></>}
 
       {memoizedAudioPlayer}

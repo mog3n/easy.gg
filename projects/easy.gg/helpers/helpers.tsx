@@ -16,3 +16,16 @@ export const convertSecondsToTimestamp = (timeInSec: number, framerate: number) 
 
     return `${minutesStr}:${secondsStr}:${framesStr}`;
 }
+export const isClient = () => typeof window !== 'undefined';
+
+export const clipThumbnailUrlProxy = (url: string) => {
+    return `/proxy/clipThumbnail/${url.replace('https://clips-media-assets2.twitch.tv/', '')}`;
+}
+
+export const userProfilePictureThumbnailProxy = (url: string) => {
+    return `/proxy/userProfilePic/${url.replace('https://static-cdn.jtvnw.net/', '')}`;
+}
+
+export const twitchClipProxy = (url: string) => {
+    return `/proxy/twitchClip/${url.replace('https://production.assets.clips.twitchcdn.net/', '')}`;
+}
