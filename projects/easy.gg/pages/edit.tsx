@@ -137,23 +137,34 @@ const Edit: NextPage = () => {
         // make clip B slo mo
         await ffmpeg.run(
           '-i', 'B.mp4',
-          '-filter_complex', `
-                              [0:v]setpts=${SLOWMOFACTOR}*PTS[slowchoppy],
-                              [slowchoppy]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=30'[slow]
+          '-filter_complex', 
+                            // `
+                            //   [0:v]setpts=${SLOWMOFACTOR}*PTS[slowchoppy],
+                            //   [slowchoppy]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=30'[slow]
+                            // `,
+                            `
+                              [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slowInt],
+                              [slowInt]setpts=${SLOWMOFACTOR}*PTS[slow]
                             `,
+                            // `
+                            //   [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slow]
+                            // `,
+                            // `
+                            //   [0:v]setpts=${SLOWMOFACTOR}*PTS[slow]
+                            // `,
           '-map', '[slow]',
           '-c:v', 'libx264',
+          '-r', FRAMERATE.toString(),
           'B-slowed.mp4',
         );
 
-        // animate the hue
-        await ffmpeg.run(
-          '-i', 'B-slowed.mp4',
-          '-vf', `hue='b=max(0,5-5*t)'`,
-          // '-vf', 'colorize=hue=1:lightness=max(1,4-2t)',
-          // '-vf', 'hue=H=2*PI*t:s=cos(2*PI*t)+10',
-          'B-slow-edited.mp4'
-        );
+        // // animate the hue
+        // await ffmpeg.run(
+        //   '-i', 'B-slowed.mp4',
+        //   '-vf', `hue='b=max(0,5-5*t)'`,
+        //   // '-r', FRAMERATE.toString(),
+        //   'B-slow-edited.mp4'
+        // );
 
         // // animate the hue (RAINBOW EFFECT)
         // await ffmpeg.run(
@@ -169,10 +180,19 @@ const Edit: NextPage = () => {
         //   'B-slow-edited.mp4'
         // );
 
-        // // animate the hue (CHANGE HUE + BRIGHTNESS EFFECT)
+        // animate the hue (CHANGE HUE + BRIGHTNESS EFFECT)
+        await ffmpeg.run(
+          '-i', 'B-slowed.mp4',
+          '-vf', `hue='h=90: b=max(0,5-5*t)', vignette`, // << test this
+          'B-slow-edited.mp4'
+        );
+
+        // tone down vingette
+
+        // // animate the hue (VIGNETTE EFFECT)
         // await ffmpeg.run(
         //   '-i', 'B-slowed.mp4',
-        //   '-vf', `hue=H=2:'b=max(0,5-5*t)'`, // << test this
+        //   '-vf', `vignette`,
         //   'B-slow-edited.mp4'
         // );
 
