@@ -73,15 +73,6 @@ const Edit: NextPage = () => {
 
   }, [])
 
-  useEffect(() => {
-    if (videoRef.current) {
-      if (videoRef.current.duration) {
-        const width = videoRef.current.duration * 60;
-        setTimelineWidth(width) // i.e. 60 pixels per second of footage
-      }
-    }
-  }, [videoRef])
-
   const generateVideo = async () => {
     if (hospitalFlick.getMinMarkerDuration() > videoMarkerDuration) {
       alert("Clip is too short!");
@@ -143,6 +134,12 @@ const Edit: NextPage = () => {
               videoRef.current?.play();
             }
           }}
+          onLoadedData={(evt) => {
+            const duration = evt.currentTarget.duration;
+            const calculatedTimelineWidth = 350/hospitalFlick.getSoundDuration() * duration;
+            setTimelineWidth(calculatedTimelineWidth);
+            setVideoTimelinePos(calculatedTimelineWidth/2);
+          }}
           onPlaying={(event) => {
             setIsVideoPlaying(true);
           }}
@@ -150,6 +147,7 @@ const Edit: NextPage = () => {
             setIsVideoPlaying(false);
           }}
           onTimeUpdate={(event) => {
+            console.log(timelineWidth);
             const videoTrackCompletionPercentage = event.currentTarget.currentTime / event.currentTarget.duration;
             const durationInPixels = videoTrackCompletionPercentage * timelineWidth;
             const timelinePos = durationInPixels - (timelineWidth / 2) // center
@@ -158,7 +156,7 @@ const Edit: NextPage = () => {
         />
       </div>
     }
-  }, [videoFile])
+  }, [videoFile, timelineWidth])
 
   const memoizedAudioPlayer = useMemo(() => {
     if (audioFile) {
@@ -243,17 +241,17 @@ const Edit: NextPage = () => {
             transform: 'translateX(-1.5px) translateY(20px)',
           }} />
           <div style={{
-            width: 300,
             position: 'absolute',
             pointerEvents: 'none',
             zIndex: 998,
           }}>
             <img src="/audio.svg" style={{
-              transform: `translateY(40px) translateX(-120px)`,
+              transform: `translateY(40px) translateX(${-((hospitalFlick.getMinMarkerDuration()/hospitalFlick.getSoundDuration()*350) - (350/2))}px)`,
               pointerEvents: 'none',
               userSelect: 'none',
               MozUserSelect: 'none',
               WebkitUserSelect: 'none',
+              width: 350,
             }}/>
           </div>
           <div style={{
@@ -300,6 +298,7 @@ const Edit: NextPage = () => {
               flex: 1,
               backgroundColor: '#282915',
               border: '2px solid #BECE07',
+              boxSizing: 'border-box',
               borderRadius: 6,
               marginTop: 30,
               marginBottom: 30,
@@ -307,8 +306,7 @@ const Edit: NextPage = () => {
           </div>
         </div>
 
-
-        <div style={{ width: timelineWidth, height: 90 }} />
+        <div style={{ width: timelineWidth, height: 20 }} />
 
         {isGeneratingVideo && renderStartTime ? <>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
@@ -331,6 +329,7 @@ const Edit: NextPage = () => {
             }}>Export</Button>
           </div>
         </>}
+
 
 
       </> : <></>}

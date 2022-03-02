@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { HeroText1, HeroText2 } from ".";
 import { getBaseUrl } from "../constants";
-import { clipThumbnailUrlProxy, twitchClipProxy, urlProxy, userProfilePictureThumbnailProxy } from "../helpers/helpers";
+import { clipThumbnailUrlProxy, twitchClipProxy, userProfilePictureThumbnailProxy } from "../helpers/helpers";
 import { useGetTwitchClip } from "../state/mutations/twitch";
 import { useGetClipMP4Data, useGetTwitchClipsFromBroadcasterID, useSearchTwitchCreators } from "../state/queries/twitch";
 import { TwitchClip, TwitchCreator } from "../types/twitchTypes";

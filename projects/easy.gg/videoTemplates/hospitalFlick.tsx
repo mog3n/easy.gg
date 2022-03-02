@@ -25,6 +25,9 @@ export const HospitalFlick = () => {
     const getMinMarkerDuration = () => {
         return hospitalFlickSound.marker
     }
+    const getSoundDuration = () => {
+        return hospitalFlickSound.duration
+    }
 
     const generateVideo = async (
         ffmpeg: FFmpeg,
@@ -47,7 +50,6 @@ export const HospitalFlick = () => {
         await ffmpeg.run(
             '-ss', videoCropLeft.toFixed(2),
             '-t', audioDuration.toString(),
-
             '-i', 'video',
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
@@ -155,5 +157,5 @@ export const HospitalFlick = () => {
         return url;
     }
 
-    return { getAudioFile, generateVideo, getVideoProgressLength, getMinMarkerDuration }
+    return { getAudioFile, generateVideo, getVideoProgressLength, getMinMarkerDuration, getSoundDuration }
 }
