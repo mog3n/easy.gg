@@ -20,7 +20,7 @@ const HeroContainer = styled.div`
     }
 `
 
-const HeroText1 = styled.div`
+export const HeroText1 = styled.div`
     text-align: center;
     font-family: 'Righteous';
     font-size: 64px;
@@ -32,7 +32,7 @@ const HeroText1 = styled.div`
         line-height: 0.9em;
     }
 `
-const HeroText2 = styled.div`
+export const HeroText2 = styled.div`
     text-align: center;
     margin-top: -20px;
     font-family: 'Righteous';

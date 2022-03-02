@@ -14,27 +14,20 @@ import { fetchFile } from '@ffmpeg/ffmpeg';
 import { convertSecondsToTimestamp } from '../helpers/helpers';
 import { ProgressBar } from 'baseui/progress-bar';
 import { useRouter } from 'next/router';
+import { HospitalFlick } from '../videoTemplates/hospitalFlick';
 
-interface SimpleSoundClip {
-  audioURL: string,
-  marker: number,
-}
+export const PROCESSING_VIDEO_STEP = 0;
 
-const hospitalFlick: SimpleSoundClip = {
-  audioURL: '/soundclips/hospital.mp3',
-  marker: 4.26,
-}
-
+const hospitalFlick = HospitalFlick();
 
 const Edit: NextPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const [videoMarkerDuration, setVideoMarkerDuration] = useState(24.340597);
-  const [audioMarkerDuration, setAudioMarkerDuration] = useState(4.26);
+  const [videoMarkerDuration, setVideoMarkerDuration] = useState(0);
 
   const [isMovingTimeline, setIsMovingTimeline] = useState(false);
-  const [videoTimelinePos, setVideoTimelinePos] = useState(-450);
+  const [videoTimelinePos, setVideoTimelinePos] = useState(450);
   const [timelineMouseOffset, setTimelineMouseOffset] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [timelineWidth, setTimelineWidth] = useState(900);
@@ -43,9 +36,11 @@ const Edit: NextPage = () => {
   const [audioFile, setAudioFile] = useState<File>();
 
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [generatingVideoProgress, setGeneratingVideoProgress] = useState(0);
   const [ffmpegProgress, setFfmpegProgress] = useState<number>(0);
 
-  const [results, setResults] = useState<string[]>([]);
+  const [renderStartTime, setRenderStartTime] = useState<Date>();
+
   const router = useRouter();
 
   const checkFfmpeg = async () => {
@@ -58,10 +53,8 @@ const Edit: NextPage = () => {
     checkFfmpeg();
 
     const asyncEffect = async () => {
-      // pre-fetch the hospital flick sound
-      const sound = await fetch(new Request(hospitalFlick.audioURL));
-      const soundBlob = await sound.blob();
-      setAudioFile(new File([soundBlob], "soundfile"));
+      const sound = await hospitalFlick.getAudioFile();
+      setAudioFile(sound);
 
       // check router for params
       if (router.query.clip) {
@@ -78,8 +71,6 @@ const Edit: NextPage = () => {
       setFfmpegProgress(progress.ratio);
     })
 
-
-
   }, [])
 
   useEffect(() => {
@@ -92,139 +83,32 @@ const Edit: NextPage = () => {
   }, [videoRef])
 
   const generateVideo = async () => {
+    if (hospitalFlick.getMinMarkerDuration() > videoMarkerDuration) {
+      alert("Clip is too short!");
+      return;
+    }
     await checkFfmpeg();
     if (videoFile && audioFile && audioRef.current) {
-
       setIsGeneratingVideo(true);
-
       try {
-        const aFile = await fetchFile(audioFile);
-        ffmpeg.FS('writeFile', 'audio', aFile);
-
-        const vFile = await fetchFile(videoFile);
-        ffmpeg.FS('writeFile', 'video', vFile);
-
-        const FRAMERATE = 30;
-
-        const videoCropLeft = videoMarkerDuration - audioMarkerDuration;
-        const audioDuration = audioRef.current.duration;
-        // Before the inciting point
-        await ffmpeg.run(
-          '-ss', videoCropLeft.toFixed(2),
-          '-t', audioMarkerDuration.toString(),
-
-          '-i', 'video',
-          '-c:v', 'libx264',
-          '-r', FRAMERATE.toString(),
-          'A.mp4'
-        );
-
-        const SLOWMOFACTOR = 2;
-
-        const slowMoEnd = ((audioDuration - audioMarkerDuration) / SLOWMOFACTOR).toFixed(2);
-
-
-        // trim slow mo part
-        await ffmpeg.run(
-          '-ss', videoMarkerDuration.toFixed(2),
-          '-t', slowMoEnd,
-          '-i', 'video',
-          '-c:v', 'libx264',
-          '-r', FRAMERATE.toString(),
-          'B.mp4'
-        )
-
-        // make clip B slo mo
-        await ffmpeg.run(
-          '-i', 'B.mp4',
-          '-filter_complex', 
-                            // `
-                            //   [0:v]setpts=${SLOWMOFACTOR}*PTS[slowchoppy],
-                            //   [slowchoppy]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=30'[slow]
-                            // `,
-                            `
-                              [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slowInt],
-                              [slowInt]setpts=${SLOWMOFACTOR}*PTS[slow]
-                            `,
-                            // `
-                            //   [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slow]
-                            // `,
-                            // `
-                            //   [0:v]setpts=${SLOWMOFACTOR}*PTS[slow]
-                            // `,
-          '-map', '[slow]',
-          '-c:v', 'libx264',
-          '-r', FRAMERATE.toString(),
-          'B-slowed.mp4',
-        );
-
-        // // animate the hue
-        // await ffmpeg.run(
-        //   '-i', 'B-slowed.mp4',
-        //   '-vf', `hue='b=max(0,5-5*t)'`,
-        //   // '-r', FRAMERATE.toString(),
-        //   'B-slow-edited.mp4'
-        // );
-
-        // // animate the hue (RAINBOW EFFECT)
-        // await ffmpeg.run(
-        //   '-i', 'B-slowed.mp4',
-        //   '-vf', 'hue=H=2*PI*t:s=cos(2*PI*t)+10',
-        //   'B-slow-edited.mp4'
-        // );
-
-        // // animate the hue (CHANGE HUE EFFECT)
-        // await ffmpeg.run(
-        //   '-i', 'B-slowed.mp4',
-        //   '-vf', 'hue=H=2*PI*t:s=cos(2*PI*t)+10',
-        //   'B-slow-edited.mp4'
-        // );
-
-        // animate the hue (CHANGE HUE + BRIGHTNESS EFFECT)
-        await ffmpeg.run(
-          '-i', 'B-slowed.mp4',
-          '-vf', `hue='h=90: b=max(0,5-5*t)', vignette`, // << test this
-          'B-slow-edited.mp4'
-        );
-
-        // tone down vingette
-
-        // // animate the hue (VIGNETTE EFFECT)
-        // await ffmpeg.run(
-        //   '-i', 'B-slowed.mp4',
-        //   '-vf', `vignette`,
-        //   'B-slow-edited.mp4'
-        // );
-
-        await ffmpeg.run(
-          '-i', 'A.mp4',
-          '-i', 'B-slow-edited.mp4',
-          '-i', 'audio',
-
-          '-filter_complex', `
-                                [0:v][0:a][1:v]concat=n=2:v=1:a=1[vcomb][acomb],
-                                [acomb][2:a]amerge=inputs=2[out]`,
-          '-map', '[vcomb]',
-          '-map', '[out]',
-          '-c:v', 'libx264',
-          '-c:a', 'aac',
-          'output.mp4'
-        );
-
-        const data = ffmpeg.FS('readFile', 'output.mp4');
-        const url = URL.createObjectURL(new Blob([data.buffer]));
-
-        setResults([...results, url]);
+        setIsGeneratingVideo(true);
+        setRenderStartTime(new Date());
+        const urlResult = await hospitalFlick.generateVideo(ffmpeg, videoFile, videoMarkerDuration, setGeneratingVideoProgress);
+        router.push({
+          pathname: '/export',
+          query: {
+            clip: urlResult
+          }
+        })
         setIsGeneratingVideo(false);
       } catch (e) {
-        console.error(e);
+        alert(e);
         setIsGeneratingVideo(false);
       }
 
     } else {
       alert("No video or audio file");
     }
-
   }
 
 
@@ -250,7 +134,8 @@ const Edit: NextPage = () => {
       }}>
         <video ref={videoRef}
           style={{ borderRadius: 5, cursor: 'pointer' }}
-          controls={false} height={window.innerHeight * 0.6} src={URL.createObjectURL(videoFile)}
+          controls={false} height={window.innerHeight * 0.6}
+          src={URL.createObjectURL(videoFile)}
           onClick={() => {
             if (videoRef.current && !videoRef.current.paused) {
               videoRef.current.pause();
@@ -282,6 +167,10 @@ const Edit: NextPage = () => {
       </div>
     }
   }, [audioFile])
+
+  const maxProgressSteps = hospitalFlick.getVideoProgressLength();
+  const normalizeFfmpegProgress = Math.min(Math.max(ffmpegProgress, 0), 100);
+  const renderProgress = ((normalizeFfmpegProgress*100)*(1/maxProgressSteps)) + (((generatingVideoProgress-1)/maxProgressSteps)*100);
 
   return (
     <div style={{
@@ -351,18 +240,32 @@ const Edit: NextPage = () => {
             pointerEvents: 'none',
             borderRadius: 5,
             zIndex: 999,
-            transform: 'translateX(-1.5px)',
+            transform: 'translateX(-1.5px) translateY(20px)',
           }} />
           <div style={{
-            width: timelineWidth || 0,
-            height: 36,
+            width: 300,
             position: 'absolute',
-            backgroundColor: '#282915',
+            pointerEvents: 'none',
+            zIndex: 998,
+          }}>
+            <img src="/audio.svg" style={{
+              transform: `translateY(40px) translateX(-120px)`,
+              pointerEvents: 'none',
+              userSelect: 'none',
+              MozUserSelect: 'none',
+              WebkitUserSelect: 'none',
+            }}/>
+          </div>
+          <div style={{
+            width: timelineWidth || 0,
+            height: 90,
+            position: 'absolute',
+
             left: (window.innerWidth / 2) - (timelineWidth / 2),
             transform: `translateX(${videoTimelinePos}px)`,
-            border: '2px solid #BECE07',
-            borderRadius: 6,
+
             cursor: 'pointer',
+            display: 'flex',
           }}
             onMouseDown={(mouseEvt) => {
               setIsMovingTimeline(true);
@@ -389,17 +292,30 @@ const Edit: NextPage = () => {
             onMouseLeave={() => {
               setIsMovingTimeline(false);
             }}
-          />
-          <div style={{ width: timelineWidth, height: 90 }} />
+          >
+            <div style={{
+              flex: 1,
+              backgroundColor: '#282915',
+              border: '2px solid #BECE07',
+              borderRadius: 6,
+              marginTop: 30,
+              marginBottom: 30,
+            }}></div>
+          </div>
         </div>
 
 
-        {isGeneratingVideo ? <>
+        <div style={{ width: timelineWidth, height: 90 }} />
+
+        {isGeneratingVideo && renderStartTime ? <>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
             <ProgressBar showLabel getProgressLabel={(value) => {
               return `${Math.round(value)}% Rendered (of a few files)`
-            }} value={Math.min(Math.max(ffmpegProgress * 100, 0), 100)} />
-            <div style={{ color: '#c7c7c7', marginTop: 10 }}>Grab a G-FUEL while your clip is being rendered!</div>
+            }} value={renderProgress} />
+            <div style={{color: "#c7c7c7", margin: 10}}>
+              {((new Date().getTime() - renderStartTime.getTime())/1000).toFixed(0)}s elapsed / eta {((((new Date().getTime() - renderStartTime.getTime())/1000)/renderProgress)*100).toFixed(0)}s
+            </div>
+            <div style={{ color: '#c7c7c7', margin: 20, marginTop: 0 }}>Please wait while we export your video. Taking too long? Consider subscribing to use cloud rendering!</div>
           </div>
         </> : <>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#fff' }}>
@@ -409,7 +325,7 @@ const Edit: NextPage = () => {
                 setVideoMarkerDuration(videoRef.current.currentTime);
                 generateVideo();
               }
-            }}>Mark</Button>
+            }}>Export</Button>
           </div>
         </>}
 
@@ -436,18 +352,6 @@ const Edit: NextPage = () => {
           <Button onClick={generateVideo}>Generate Video</Button>
         </div>
       </> : <></>} */}
-
-      {results ? <>
-
-        <div style={{ display: 'flex', }}>
-
-          {results.map(result => (<>
-            <video style={{ width: 300 }} controls src={result} />
-          </>))}
-
-        </div>
-
-      </> : <></>}
 
     </div>
   )
