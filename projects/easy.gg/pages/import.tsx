@@ -34,7 +34,7 @@ const ImportPage: NextPage = (props) => {
             videoLink.searchParams.append('token', clipData.playbackAccessToken.value);
             return <FullWidthVideoPlayer autoPlay src={twitchClipProxy(videoLink.href)} controls />;
         }
-    }, [clipVideoData, selectedClip])
+    }, [selectedClip, clipVideoData.isSuccess])
 
     if (selectedClip && clipVideoData.isSuccess) {
         const clipData = clipVideoData.data.data.data.clip;

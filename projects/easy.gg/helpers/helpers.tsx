@@ -27,5 +27,8 @@ export const userProfilePictureThumbnailProxy = (url: string) => {
 }
 
 export const twitchClipProxy = (url: string) => {
-    return `/proxy/twitchClip/${url.replace('https://production.assets.clips.twitchcdn.net/', '')}`;
+    const urlLink = new URL(`${window.location.protocol}//${window.location.host}/api/twitch/videoProxy`);
+    urlLink.searchParams.append('url', url);
+    return urlLink;
+    // return `/proxy/twitchClip/${url.replace('https://production.assets.clips.twitchcdn.net/', '')}`;
 }

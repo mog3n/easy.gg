@@ -11,6 +11,7 @@
     "@apollo/client": "^3.5.9",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
+    "@types/request": "^2.48.8",
     "@types/styled-components": "^5.1.22",
     "@types/styletron-engine-atomic": "^1.1.1",
     "@types/styletron-react": "^5.0.3",
@@ -24,6 +25,7 @@
     "react-icons": "^4.3.1",
     "react-query": "^3.34.15",
     "react-wavesurfer": "^0.8.6",
+    "request": "^2.88.2",
     "styled-components": "^5.3.3",
     "styletron-engine-atomic": "^1.4.8",
     "styletron-react": "^6.0.2"
