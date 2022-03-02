@@ -288,6 +288,9 @@ const Edit: NextPage = () => {
             }}
             onMouseUp={() => {
               setIsMovingTimeline(false);
+              if (videoRef.current) {
+                setVideoMarkerDuration(videoRef.current.currentTime);
+              }
             }}
             onMouseLeave={() => {
               setIsMovingTimeline(false);
