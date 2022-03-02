@@ -1,5 +1,5 @@
 import axios from "axios";
-import request from 'request';
+import { request } from "https";
 import { NextApiRequest, NextApiResponse } from "next";
 import { handleAPIError, requireGetParam, requirePostParam } from "../../../helpers/api/helpers";
 

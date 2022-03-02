@@ -2,9 +2,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios';
 import { requireGetParam } from '../../../helpers/api/helpers';
-import { ApolloClient, gql, HttpLink, InMemoryCache } from '@apollo/client';
-import { createPersistedQueryLink } from "@apollo/client/link/persisted-queries";
-import { sha256 } from 'crypto-hash';
 
 export default async function handler(
   req: NextApiRequest,

@@ -55,7 +55,7 @@ const ImportPage: NextPage = (props) => {
                 {getTwitchClipMutation.isLoading ?
                     <div style={{ color: '#fff' }}>Importing...</div>
                     : <>
-                        <Image src="/assets/import-btn.svg" width={80} height={80} alt="Import" style={{ width: 80, margin: 30 }} onClick={async () => {
+                        <Image src="/assets/import-btn.svg" width={80} height={80} alt="Import" onClick={async () => {
                             if (!getTwitchClipMutation.isLoading) {
                                 const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
                                 const dataUrl = URL.createObjectURL(clipResp.data);
