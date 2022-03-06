@@ -65,6 +65,16 @@ const ImportPage: NextPage = (props) => {
                                 });
                             }
                         }}></Image>
+                        <button onClick={async() => {
+                            if (!getTwitchClipMutation.isLoading) {
+                                const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
+                                const dataUrl = URL.createObjectURL(clipResp.data);
+                                router.push({
+                                    pathname: '/facecam',
+                                    query: { clip: dataUrl },
+                                });
+                            }
+                        }}>Facecam</button>
                     </>}
             </FlexCenterHorizontally>
 
