@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import ffmpeg from "../components/ffmpeg";
 import { renderFacecam } from "../ffmpegEffects/facecam";
 
-const FacamTest: NextPage = () => {
+const FacecamTest: NextPage = () => {
     useEffect(() => {
         ffmpeg.load();
     }, [])
@@ -19,3 +19,5 @@ const FacamTest: NextPage = () => {
         )}>call function</button>
     </>
 }
+
+export default FacecamTest
