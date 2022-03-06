@@ -43,6 +43,20 @@ const nextConfig = {
         }
       ]
     }
+  },
+  async redirects() {
+    return [
+      {
+        source: '/tos',
+        destination: 'https://ezgg.notion.site/EZ-GG-Terms-of-Service-b846e799c03146eca83baad98a7d0572',
+        permanent: true
+      },
+      {
+        source: '/privacy',
+        destination: 'https://ezgg.notion.site/EZ-GG-Privacy-Policy-1ade4ba54a5c4262ae643e481c2c1a0d',
+        permanent: true
+      }
+    ]
   }
 }
 
