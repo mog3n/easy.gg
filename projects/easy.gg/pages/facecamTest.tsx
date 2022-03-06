@@ -9,8 +9,13 @@ const FacamTest: NextPage = () => {
     }, [])
 
     return <>
-        <button onClick={() => renderFacecam(
-            ffmpeg
+        <button onClick={async () => renderFacecam(
+            ffmpeg,
+            new File([(await (await fetch(new Request('/TEST.mp4'))).blob())], 'video.mp4'),
+            { x: 0, y: 0, width: 0, height: 0},
+            { x: 0, y: 0, width: 0, height: 0},
+            0,
+            10
         )}>call function</button>
     </>
 }

@@ -14,7 +14,7 @@ import { fetchFile } from '@ffmpeg/ffmpeg';
 import { convertSecondsToTimestamp } from '../helpers/helpers';
 import { ProgressBar } from 'baseui/progress-bar';
 import { useRouter } from 'next/router';
-import { HospitalFlick } from '../videoTemplates/hospitalFlick';
+import { HospitalFlick } from '../ffmpegEffects/hospitalFlick';
 
 export const PROCESSING_VIDEO_STEP = 0;
 

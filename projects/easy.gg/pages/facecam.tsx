@@ -16,10 +16,16 @@ const Facecam: NextPage = () => {
     const [clipProxyUrl, setClipProxyUrl] = useState('');
 
     const [showFaceCrop, setShowCrop] = useState(false);
+    const [isMovingFaceCrop, setIsMovingFaceCrop] = useState(false);
     const [faceCrop, setFaceCrop] = useState<CropPosition>({
         x: 0, y: 0, width: 100, height: 100
     })
+
     const [showVideoCrop, setShowVideoCrop] = useState(false);
+    const [isMovingVideoCrop, setIsMovingVideoCrop] = useState(false);
+    const [videoCrop, setVideoCrop] = useState<CropPosition>({
+        x: 0, y: 0, width: 100, height: 200
+    })
 
     useEffect(() => {
         const blobUrl = router.query.clip as string;
@@ -28,20 +34,35 @@ const Facecam: NextPage = () => {
     }, [router]);
 
     return <>
-        <div style={{
-            width: 600,
-        }}>
+        <div>
             <div
                 style={{
                     position: 'absolute',
                     width: faceCrop.width,
                     height: faceCrop.height,
-                    border: '1px solid #000',
+                    border: '3px solid #fff',
                     translate: `transformX(${faceCrop.x}), transformY(${faceCrop.y})`,
+                    backgroundColor: 'rgba(255,255,255,0.3)',
+                    zIndex: 99
                 }}
-                
+                onMouseDown={(mouseEvt) => {
+                    setIsMovingFaceCrop(true);
+                }}
+                onMouseUp={(mouseEvt) => {
+                    setIsMovingFaceCrop(false);
+                }}
+                onMouseMove={(mouseEvt) => {
+                    const { left, top } = mouseEvt.currentTarget.getBoundingClientRect();
+                    const { clientX, clientY } = mouseEvt;
+                    setFaceCrop({
+                        x: clientX-left,
+                        y: clientY-top,
+                        width: faceCrop.width,
+                        height: faceCrop.height,
+                    })
+                }}
             />
-            <video src={clipProxyUrl} controls style={{ width: 600 }} />
+            <video src={clipProxyUrl} style={{ width: 600 }} />
         </div>
     </>
 }
