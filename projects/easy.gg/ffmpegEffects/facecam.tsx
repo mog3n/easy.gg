@@ -51,7 +51,7 @@ export const renderFacecam = async (
     await ffmpeg.run(
         '-i', 'video',
         // '-filter:v', `crop=${gw}:${gh}:${gx}:${gy}`,
-        '-filter_complex', `[0:v]crop=${fw}:${fh}:${fx}:${fy}[cropped];
+        '-filter_complex', `[0:v]crop=${gw}:${gh}:${gx}:${gy}[cropped];
                             [cropped]scale=${scaledgw}:${scaledgh}[out]`,
         '-map', '[out]',
         '-map', '0:a',
