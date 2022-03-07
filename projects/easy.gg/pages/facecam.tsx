@@ -1,6 +1,8 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ffmpeg from "../components/ffmpeg";
+import { renderFacecam } from "../ffmpegEffects/facecam";
 import { twitchClipProxy } from "../helpers/helpers";
 
 export interface CropPosition {
@@ -19,6 +21,7 @@ const Facecam: NextPage = () => {
     const router = useRouter();
     const [clipUrl, setClipUrl] = useState('');
     const [clipProxyUrl, setClipProxyUrl] = useState('');
+    const videoRef = useRef<HTMLVideoElement>(null);
 
     const [mouseStartPos, setMouseStartPos] = useState<MousePos>({ x: 0, y: 0 })
 
@@ -34,6 +37,14 @@ const Facecam: NextPage = () => {
         x: 0, y: 0, width: 100, height: 200
     })
     const [heightRatio, setHeightRatio] = useState(0);
+
+    const [results, setResults] = useState<string[]>();
+
+    const [resp, setRes] = useState<string[]>();
+    useEffect(() => {
+        ffmpeg.load();
+    }, [])
+
 
     useEffect(() => {
         const blobUrl = router.query.clip as string;
@@ -69,10 +80,10 @@ const Facecam: NextPage = () => {
                         const { left, top } = mouseEvt.currentTarget.getBoundingClientRect();
                         const { clientX, clientY } = mouseEvt;
                         setVideoCrop({
-                            x: clientX - mouseStartPos.x,
-                            y: clientY - mouseStartPos.y,
-                            width: videoCrop.width,
-                            height: videoCrop.height,
+                            x: Math.round(clientX - mouseStartPos.x),
+                            y: Math.round(clientY - mouseStartPos.y),
+                            width: Math.round(videoCrop.width),
+                            height: Math.round(videoCrop.height),
                         })
                     }
                 }}
@@ -103,10 +114,10 @@ const Facecam: NextPage = () => {
                         const { clientX, clientY } = mouseEvt;
                         const width = clientX - videoCrop.x + 7.5;
                         setVideoCrop({
-                            x: videoCrop.x,
-                            y: videoCrop.y,
-                            width,
-                            height: width * heightRatio
+                            x: Math.round(videoCrop.x),
+                            y: Math.round(videoCrop.y),
+                            width: Math.round(width),
+                            height: Math.round(width * heightRatio)
                         })
                     }
                 }}
@@ -178,10 +189,10 @@ const Facecam: NextPage = () => {
                         const faceCropWidth = clientX - faceCrop.x + 7.5;
                         const faceCropHeight = clientY - faceCrop.y + 7.5
                         setFaceCrop({
-                            x: faceCrop.x,
-                            y: faceCrop.y,
-                            width: faceCropWidth,
-                            height: faceCropHeight
+                            x: Math.round(faceCrop.x),
+                            y: Math.round(faceCrop.y),
+                            width: Math.round(faceCropWidth),
+                            height: Math.round(faceCropHeight)
                         })
                     }
                 }}
@@ -193,7 +204,7 @@ const Facecam: NextPage = () => {
         <div>
             {showVideoCrop ? renderVideoCropTool() : <></>}
             {showFaceCrop ? renderFaceCamCropTool() : <></>}
-            <video src={clipProxyUrl} style={{ width: 600 }} />
+            <video src={clipProxyUrl} style={{ width: 600 }} ref={videoRef} />
 
             <div>
                 {showVideoCrop ? <>Video Crop</> : <></>}
@@ -203,10 +214,10 @@ const Facecam: NextPage = () => {
                     onClick={() => {
                         const ratio = (16 - ((9 * faceCrop.height) / faceCrop.width)) / 9;
                         setVideoCrop({
-                            x: videoCrop.x,
-                            y: videoCrop.y,
-                            width: faceCrop.width,
-                            height: faceCrop.width * ratio
+                            x: Math.round(videoCrop.x),
+                            y: Math.round(videoCrop.y),
+                            width: Math.round(faceCrop.width),
+                            height: Math.round(faceCrop.width * ratio)
                         })
                         setHeightRatio(ratio);
                         setShowVideoCrop(true);
@@ -224,6 +235,45 @@ const Facecam: NextPage = () => {
                 >
                     Edit Face Crop
                 </button>
+
+                <button onClick={async () => {
+                    console.log(videoCrop, faceCrop);
+
+                    if (videoRef.current) {
+                        const {videoWidth, videoHeight} = videoRef.current;
+                        const videoPlayerWidth = videoRef.current.clientWidth;
+                        const videoPlayerHeight = videoRef.current.clientHeight;
+
+                        console.log(videoWidth, videoHeight, videoPlayerWidth, videoPlayerHeight);
+
+                        const widthScaleFactor = videoWidth / videoPlayerWidth;
+                        const heightScaleFactor = videoHeight / videoPlayerHeight;
+                        
+                        let faceCropAbsolute: CropPosition = {
+                            x: faceCrop.x * widthScaleFactor,
+                            y: faceCrop.y * heightScaleFactor,
+                            width: faceCrop.width * widthScaleFactor,
+                            height: faceCrop.height * heightScaleFactor,
+                        };
+                        
+                        let gameCropAbsolute: CropPosition = {
+                            x: videoCrop.x * widthScaleFactor,
+                            y: videoCrop.y * heightScaleFactor,
+                            width: videoCrop.width * widthScaleFactor,
+                            height: videoCrop.height * heightScaleFactor,
+                        };
+                        console.log(faceCropAbsolute, gameCropAbsolute);
+                        const file = new File([(await (await fetch(new Request(clipProxyUrl))).blob())], 'video.mp4');
+                        const render = await renderFacecam(ffmpeg, file, faceCropAbsolute, gameCropAbsolute, 0, 0);
+                        setResults(render);
+                    }
+
+                }}>Render</button>
+
+                {results ? results.map(result => {
+                    return <video src={result} key={result} />
+                }): <></>}
+                
             </div>
 
         </div>

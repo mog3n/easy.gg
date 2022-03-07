@@ -27,7 +27,10 @@ export const renderFacecam = async (
     const fh = faceCrop.height
     const fw = faceCrop.width
     const scaledfw = 1080
-    const scaledfh = 1080*(fh/fw) // fh/fw is the ratio
+    let scaledfh = Math.floor(1080*(fh/fw)) // fh/fw is the ratio
+    if (scaledfh % 2 === 1) {
+        scaledfh-=1
+    }
     await ffmpeg.run(
         '-i', 'video',
         // '-filter:v', `crop=${fw}:${fh}:${fx}:${fy}`,
@@ -46,7 +49,10 @@ export const renderFacecam = async (
     const gh = gameCrop.height
     const gw = gameCrop.width
     const scaledgw = 1080
-    const scaledgh = 1080*(gh/gw) // gh/gw is the ratio
+    let scaledgh = Math.floor(1080*(gh/gw)) // gh/gw is the ratio
+    if (scaledgh % 2 === 1) {
+        scaledgh-=1
+    }
 
     await ffmpeg.run(
         '-i', 'video',
@@ -81,16 +87,16 @@ export const renderFacecam = async (
     const urls : string[] = []
     let data = ffmpeg.FS('readFile', 'facecam.mp4');
     let url = URL.createObjectURL(new Blob([data.buffer]));
-    urls.push(url)
+    // urls.push(url)
     data = ffmpeg.FS('readFile', 'gamecam.mp4');
     url = URL.createObjectURL(new Blob([data.buffer]));
-    urls.push(url)
+    // urls.push(url)
     data = ffmpeg.FS('readFile', 'stitched.mp4');
     url = URL.createObjectURL(new Blob([data.buffer]));
     urls.push(url)
     data = ffmpeg.FS('readFile', 'video');
     url = URL.createObjectURL(new Blob([data.buffer]));
-    urls.push(url)
+    // urls.push(url)
     
 
     return urls; // this is an array
