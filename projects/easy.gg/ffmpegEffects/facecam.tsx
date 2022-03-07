@@ -69,6 +69,8 @@ export const renderFacecam = async (
         '-i', 'gamecam.mp4',
         '-filter_complex', `[0:v][1:v]vstack=inputs=2[out]`,
         '-map', '[out]',
+        '-map', '0:a',
+        '-preset', 'ultrafast',
         '-c:v', 'libx264',
         '-r', FRAMERATE.toString(),                 
         'stitched.mp4'
