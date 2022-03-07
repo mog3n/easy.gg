@@ -15,7 +15,7 @@ const FacecamTest: NextPage = () => {
                 ffmpeg,
                 new File([(await (await fetch(new Request('/TEST.mp4'))).blob())], 'video.mp4'),
                 { x: 0, y: 520, width: 300, height: 200 }, //facecam
-                { x: 540, y: 0, width: 300, height: 600 }, //gamecam
+                { x: 520, y: 0, width: 300, height: 500 }, //gamecam
                 0,
                 10
             )
