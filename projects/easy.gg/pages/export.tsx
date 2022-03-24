@@ -3,8 +3,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { HeroText1 } from ".";
+import { Header } from "../components/ui/Header";
 
-const Export : NextPage = () => {
+const Export: NextPage = () => {
     const router = useRouter();
     const [clipUrl, setClipUrl] = useState('');
 
@@ -26,30 +27,33 @@ const Export : NextPage = () => {
         </SplitView>
     }
 
-    return <SplitView>
-        <SplitViewSectionLeft>
-            <video style={{width: 300}} src={clipUrl}></video>
-        </SplitViewSectionLeft>
-        <SplitViewSectionRight>
-            <H1>Save your clip!</H1>
-            
-            <ExportButton>
-                <ExportButtonIcon src="/assets/icons/tiktok.png" />
-                Send to TikTok
-            </ExportButton>
+    return <>
+        <Header />
+        <SplitView>
+            <SplitViewSectionLeft>
+                <video style={{ width: 300 }} src={clipUrl}></video>
+            </SplitViewSectionLeft>
+            <SplitViewSectionRight>
+                <H1>Save your clip!</H1>
 
-            <ExportButton>
-                <ExportButtonIcon src="/assets/icons/youtube.png" />
-                Send to YouTube
-            </ExportButton>
+                <ExportButton>
+                    <ExportButtonIcon src="/assets/icons/tiktok.png" />
+                    Send to TikTok
+                </ExportButton>
 
-            <ExportButton onClick={(_) => download()}>
-                <ExportButtonIcon src="/assets/icons/download.png" style={{width: 25}} />
-                Download
-            </ExportButton>
+                <ExportButton>
+                    <ExportButtonIcon src="/assets/icons/youtube.png" />
+                    Send to YouTube
+                </ExportButton>
 
-        </SplitViewSectionRight>
-    </SplitView>
+                <ExportButton onClick={(_) => download()}>
+                    <ExportButtonIcon src="/assets/icons/download.png" style={{ width: 25 }} />
+                    Download
+                </ExportButton>
+
+            </SplitViewSectionRight>
+        </SplitView>
+    </>
 }
 export default Export;
 
@@ -82,7 +86,7 @@ export const H1 = styled.div`
     margin-bottom: 20px;
 `
 
-const ExportButton = styled.div`
+export const ExportButton = styled.div`
     cursor: pointer;
     display: flex;
     justify-content: flex-start;
@@ -100,7 +104,7 @@ const ExportButton = styled.div`
         background-color: #333;
     }
 `
-const ExportButtonIcon = styled.img`
+export const ExportButtonIcon = styled.img`
     width: 35px;
     margin-right: 5px;
 `

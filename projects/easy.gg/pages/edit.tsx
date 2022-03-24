@@ -15,6 +15,7 @@ import { convertSecondsToTimestamp } from '../helpers/helpers';
 import { ProgressBar } from 'baseui/progress-bar';
 import { useRouter } from 'next/router';
 import { HospitalFlick } from '../ffmpegEffects/hospitalFlick';
+import { Header } from '../components/ui/Header';
 
 export const PROCESSING_VIDEO_STEP = 0;
 
@@ -180,6 +181,7 @@ const Edit: NextPage = () => {
         <meta name="description" content="An editor" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Header pageActive="Editor" />
 
       {!videoFile || !audioFile ? <>
         <div style={{ display: 'flex', flex: 1, justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh' }}>
@@ -198,19 +200,19 @@ const Edit: NextPage = () => {
 
       {videoFile ? <>
         <div style={{ display: 'flex', justifyContent: 'center', backgroundColor: '#000', marginTop: -30 }}>
-          <Button onClick={() => {
+          <Button kind="minimal" onClick={() => {
             if (videoRef.current) {
               videoRef.current.currentTime -= 0.1;
             }
           }}><FiChevronLeft /></Button>
-          <Button onClick={() => {
+          <Button kind="minimal" onClick={() => {
             if (!isVideoPlaying) {
               videoRef.current?.play();
             } else {
               videoRef.current?.pause();
             }
           }}>{!isVideoPlaying ? <FaPlay /> : <FaPause />}</Button>
-          <Button onClick={() => {
+          <Button kind="minimal" onClick={() => {
             if (videoRef.current) {
               videoRef.current.currentTime += 0.1;
             }

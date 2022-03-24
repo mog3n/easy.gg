@@ -2,6 +2,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import ffmpeg from "../components/ffmpeg";
+import { Header } from "../components/ui/Header";
 import { renderFacecam } from "../ffmpegEffects/facecam";
 import { twitchClipProxy } from "../helpers/helpers";
 
@@ -42,7 +43,9 @@ const Facecam: NextPage = () => {
 
     const [resp, setRes] = useState<string[]>();
     useEffect(() => {
-        ffmpeg.load();
+        if(!ffmpeg.isLoaded()) {
+            ffmpeg.load();
+        }
     }, [])
 
 
@@ -56,6 +59,8 @@ const Facecam: NextPage = () => {
         return <>
             <div
                 style={{
+                    top: 0,
+                    left: 0,
                     position: 'absolute',
                     width: videoCrop.width,
                     height: videoCrop.height,
@@ -90,6 +95,8 @@ const Facecam: NextPage = () => {
             />
             <div
                 style={{
+                    top: 0,
+                    left: 0,
                     position: "absolute",
                     width: 15,
                     height: 15,
@@ -130,6 +137,8 @@ const Facecam: NextPage = () => {
             <div
                 style={{
                     position: 'absolute',
+                    top: 0,
+                    left: 0,
                     width: faceCrop.width,
                     height: faceCrop.height,
                     border: '3px solid #fff',
@@ -164,6 +173,8 @@ const Facecam: NextPage = () => {
             />
             <div
                 style={{
+                    top: 0,
+                    left: 0,
                     position: "absolute",
                     width: 15,
                     height: 15,
@@ -202,9 +213,14 @@ const Facecam: NextPage = () => {
 
     return <>
         <div>
-            {showVideoCrop ? renderVideoCropTool() : <></>}
-            {showFaceCrop ? renderFaceCamCropTool() : <></>}
-            <video src={clipProxyUrl} style={{ width: 600 }} ref={videoRef} />
+            <Header pageActive="Editor" />
+
+            <div>
+                <video src={clipProxyUrl} style={{ width: 600 }} ref={videoRef} />
+                {showVideoCrop ? renderVideoCropTool() : <></>}
+                {showFaceCrop ? renderFaceCamCropTool() : <></>}
+            </div>
+            
 
             <div>
                 {showVideoCrop ? <>Video Crop</> : <></>}
@@ -240,25 +256,32 @@ const Facecam: NextPage = () => {
                     console.log(videoCrop, faceCrop);
 
                     if (videoRef.current) {
-                        const {videoWidth, videoHeight} = videoRef.current;
+                        const {videoWidth, videoHeight, offsetLeft, offsetTop} = videoRef.current;
                         const videoPlayerWidth = videoRef.current.clientWidth;
                         const videoPlayerHeight = videoRef.current.clientHeight;
 
-                        console.log(videoWidth, videoHeight, videoPlayerWidth, videoPlayerHeight);
+                        console.log(videoWidth, videoHeight, videoPlayerWidth, videoPlayerHeight, offsetLeft, offsetTop);
 
+                        // Account for video scaling (i.e. the video preview in the browser is the same size as the actual video)
                         const widthScaleFactor = videoWidth / videoPlayerWidth;
                         const heightScaleFactor = videoHeight / videoPlayerHeight;
+
+                        // Account for the position of the video player
+                        const faceCropX = faceCrop.x - offsetLeft;
+                        const faceCropY = faceCrop.y - offsetTop;
+                        const videoCropX = videoCrop.x - offsetLeft;
+                        const videoCropY = videoCrop.y - offsetTop;
                         
                         let faceCropAbsolute: CropPosition = {
-                            x: faceCrop.x * widthScaleFactor,
-                            y: faceCrop.y * heightScaleFactor,
+                            x: faceCropX * widthScaleFactor,
+                            y: faceCropY * heightScaleFactor,
                             width: faceCrop.width * widthScaleFactor,
                             height: faceCrop.height * heightScaleFactor,
                         };
                         
                         let gameCropAbsolute: CropPosition = {
-                            x: videoCrop.x * widthScaleFactor,
-                            y: videoCrop.y * heightScaleFactor,
+                            x: videoCropX * widthScaleFactor,
+                            y: videoCropY * heightScaleFactor,
                             width: videoCrop.width * widthScaleFactor,
                             height: videoCrop.height * heightScaleFactor,
                         };

@@ -1,5 +1,14 @@
 import Image from 'next/image'
 import styled from 'styled-components'
+import { AppNavBar } from 'baseui/app-nav-bar';
+import { useState } from 'react';
+import { getAuth } from 'firebase/auth';
+import { useRouter } from 'next/router';
+import { app } from '../../pages/_app';
+import { useAuth } from '../hooks/useAuth';
+import { toaster } from 'baseui/toast';
+import { useSetRecoilState } from 'recoil';
+import { signInModalVisibleState } from '../../state/atoms/ui';
 
 const HeaderContainer = styled.div`
     width: 100%;
@@ -19,8 +28,7 @@ const HeaderItems = styled.div`
 `
 
 const HeaderLogo = styled.img`
-    width: 69px;
-    height: 60px;
+    width: 43px;
     margin: 10px;
     @media (max-width: 600px) {
         width: 52px;
@@ -35,13 +43,117 @@ const BetaTestButton = styled.img`
     }
 `
 
-export const Header = (props: any) => {
-    return <HeaderContainer>
-        <HeaderItems>
-            <HeaderLogo src="/logo.svg" alt="Logo" />
-            <a href="https://discord.com/invite/P8kdG7XD5M">
-                <BetaTestButton src="/joinbetatest.svg" alt="Join Beta Button"/>
-            </a>
-        </HeaderItems>
-    </HeaderContainer>
+const MainItems = {Home: "Home", Editor: "Editor", Library: "Library", Login: "Login", Import: "Import"}
+const UserItems = {Settings: "Account Settings", SignOut: "Sign Out"}
+const userProfilePhrases = ["Gamer since time", "Welcome back!", "Gamer since birth", "Spike planted!", "Ace!"];
+interface HeaderProps {
+    pageActive: "Home" | "Editor" | "Library" | "Login" | "Import"
+}
+
+export const Header = (props: HeaderProps) => {
+    const auth = useAuth();
+    const router = useRouter();
+
+    const setSignInModalVisible = useSetRecoilState(signInModalVisibleState);
+    const user = auth.user
+
+    const isMainItemActive = (name: string) => {
+        return (name === props.pageActive)
+    }
+
+    if (user) {
+        return <>
+            <AppNavBar
+                title="EZ GG"
+                mainItems={[
+                    { label: MainItems.Home, active: isMainItemActive(MainItems.Home) },
+                    { label: MainItems.Editor, active: isMainItemActive(MainItems.Editor) },
+                    { label: MainItems.Import, active: isMainItemActive(MainItems.Import) }
+                ]}
+                userImgUrl="/assets/userprofile2.jpg"
+                username={user.phoneNumber}
+                usernameSubtitle={userProfilePhrases[Math.round(Math.random()*userProfilePhrases.length)]}
+                userItems={[
+                    { label: UserItems.Settings },
+                    { label: UserItems.SignOut }
+                ]}
+                onUserItemSelect={(item) => {
+                    switch (item.label) {
+                        case UserItems.Settings:
+                            break;
+                        case UserItems.SignOut:
+                            // Sign Out
+                            auth.firebaseAuth.signOut().then(() => {
+                                toaster.info(<>Signed out</>, {autoHideDuration: 5000})
+                            })
+                            break;
+                        default:
+                            break;
+                    }
+                }}
+                onMainItemSelect={(item) => {
+                    switch(item.label) {
+                        case MainItems.Home:
+                            // Account Settings
+                            router.push('/');
+                            break;
+                        case MainItems.Editor:
+                            router.push('/edit');
+                            break;
+                        case MainItems.Import:
+                            router.push('/import');
+                            break;
+                        case MainItems.Login:
+                            setSignInModalVisible(true);
+                            break;
+                        default:
+                            break;
+                    }
+                }}
+                overrides={{
+                    AppName: {
+                        component: () => <HeaderLogo src="/logo.svg" alt="Logo" />
+                    }
+                }}
+            />
+        </>
+    }
+
+    // Unauthed header
+    return <>
+        <AppNavBar
+            title="EZ GG"
+            mainItems={[
+                { label: MainItems.Home, active: isMainItemActive(MainItems.Home) },
+                { label: MainItems.Editor, active: isMainItemActive(MainItems.Editor) },
+                { label: MainItems.Import, active: isMainItemActive(MainItems.Import) },
+                { label: MainItems.Login }
+
+            ]}
+            onMainItemSelect={(item) => {
+                switch(item.label) {
+                    case MainItems.Home:
+                        // Account Settings
+                        router.push('/');
+                        break;
+                    case MainItems.Editor:
+                        router.push('/edit');
+                        break;
+                    case MainItems.Import:
+                        router.push('/import');
+                        break;
+                    case MainItems.Login:
+                        setSignInModalVisible(true);
+                        break;
+                    default:
+                        break;
+                }
+            }}
+            overrides={{
+                AppName: {
+                    component: () => <HeaderLogo src="/logo.svg" alt="Logo" />
+                }
+            }}
+        />
+    </>
 }

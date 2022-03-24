@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import styled from "styled-components";
 import { HeroText1, HeroText2 } from ".";
+import { Header } from "../components/ui/Header";
 import { getBaseUrl } from "../constants";
 import { clipThumbnailUrlProxy, twitchClipProxy, userProfilePictureThumbnailProxy } from "../helpers/helpers";
 import { useGetTwitchClip } from "../state/mutations/twitch";
@@ -43,6 +44,7 @@ const ImportPage: NextPage = (props) => {
         videoLink.searchParams.append('token', clipData.playbackAccessToken.value);
 
         return <>
+            <Header pageActive="Import" />
             <HeaderBar>
                 <HeaderBackButton onClick={() => setSelectedClip(undefined)} src="/assets/icons/arrow-left.svg" />
                 <HeaderText>{selectedClip.title}</HeaderText>
@@ -83,6 +85,7 @@ const ImportPage: NextPage = (props) => {
 
     if (selectedCreator && clipQuery.data) {
         return <>
+            <Header pageActive="Import" />
             <HeaderBar>
                 <HeaderBackButton src="/assets/icons/arrow-left.svg" onClick={() => setSelectedCreator(undefined)} />
                 <HeaderText>{selectedCreator.display_name}&apos;s Twitch Clips</HeaderText>
@@ -115,6 +118,7 @@ const ImportPage: NextPage = (props) => {
     }
 
     return <>
+        <Header pageActive="Import" />
         <div style={{ marginTop: 60 }}>
             <HeroText2 style={{marginBottom: 20, fontSize: 48}}>Import from Twitch</HeroText2>
             <LargeSearchBar value={creatorSearchQuery} onChange={(evt) => setCreatorSearchQuery(evt.target.value)} placeholder="Search for a creator" />

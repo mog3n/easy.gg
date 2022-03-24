@@ -4,6 +4,7 @@ import { SiteContainer } from "../components/ui/Body";
 import { Header } from "../components/ui/Header";
 import Image from "next/image";
 import { LANDING_MOBILE_BREAKPOINT } from "../constants";
+import { getAuth } from "firebase/auth";
 
 const HeroContainer = styled.div`
     margin-top: 60px;
@@ -123,7 +124,7 @@ const DesktopSpacing3 = styled.div`
 
 const Home: NextPage = () => {
     return <SiteContainer>
-        <Header />
+        <Header pageActive="Home"/>
         <HeroContainer>
             <HeroText1>Professional gaming clips</HeroText1>
             <HeroText2>in seconds.</HeroText2>
