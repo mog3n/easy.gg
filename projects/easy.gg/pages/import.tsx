@@ -62,12 +62,12 @@ const ImportPage: NextPage = (props) => {
                                 const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
                                 const dataUrl = URL.createObjectURL(clipResp.data);
                                 router.push({
-                                    pathname: '/edit',
+                                    pathname: '/create',
                                     query: { clip: dataUrl },
                                 });
                             }
                         }}></Image>
-                        <button onClick={async() => {
+                        {/* <button onClick={async() => {
                             if (!getTwitchClipMutation.isLoading) {
                                 // const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
                                 // const dataUrl = URL.createObjectURL(clipResp.data);
@@ -76,7 +76,7 @@ const ImportPage: NextPage = (props) => {
                                     query: { clip: videoLink.href },
                                 });
                             }
-                        }}>Facecam</button>
+                        }}>Facecam</button> */}
                     </>}
             </FlexCenterHorizontally>
 
@@ -119,9 +119,10 @@ const ImportPage: NextPage = (props) => {
 
     return <>
         <Header pageActive="Import" />
-        <div style={{ marginTop: 60 }}>
-            <HeroText2 style={{marginBottom: 20, fontSize: 48}}>Import from Twitch</HeroText2>
+        <div style={{ marginTop: 60, display: 'flex', justifyContent: 'space-around', alignItems: 'center', marginLeft: 20, marginRight: 20 }}>
+            <HeroText2 style={{marginBottom: 20, fontSize: 48}}>Search Twitch</HeroText2>
             <LargeSearchBar value={creatorSearchQuery} onChange={(evt) => setCreatorSearchQuery(evt.target.value)} placeholder="Search for a creator" />
+            <div></div>
         </div>
 
         {searchQuery.data ? <UserSearchResults>

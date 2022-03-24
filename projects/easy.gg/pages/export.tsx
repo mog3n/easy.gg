@@ -3,11 +3,17 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { HeroText1 } from ".";
+import { useAuth } from "../components/hooks/useAuth";
 import { Header } from "../components/ui/Header";
+import { IoMdLogIn } from 'react-icons/io'
+import { useSetRecoilState } from "recoil";
+import { signInModalVisibleState } from "../state/atoms/ui";
 
 const Export: NextPage = () => {
     const router = useRouter();
+    const auth = useAuth();
     const [clipUrl, setClipUrl] = useState('');
+    const setIsSignInModalVisible = useSetRecoilState(signInModalVisibleState);
 
     useEffect(() => {
         const blobUrl = router.query.clip as string;
@@ -27,13 +33,9 @@ const Export: NextPage = () => {
         </SplitView>
     }
 
-    return <>
-        <Header />
-        <SplitView>
-            <SplitViewSectionLeft>
-                <video style={{ width: 300 }} src={clipUrl}></video>
-            </SplitViewSectionLeft>
-            <SplitViewSectionRight>
+    const renderExportButtons = () => {
+        if (auth.user) {
+            return <>
                 <H1>Save your clip!</H1>
 
                 <ExportButton>
@@ -50,7 +52,25 @@ const Export: NextPage = () => {
                     <ExportButtonIcon src="/assets/icons/download.png" style={{ width: 25 }} />
                     Download
                 </ExportButton>
-
+            </>
+        } else {
+            return <>
+                <H1>Sign in to save your clip</H1>
+                <ExportButton onClick={() => setIsSignInModalVisible(true) }>
+                    <IoMdLogIn size={32} style={{marginRight: 10}}/>
+                    Sign In
+                </ExportButton>
+            </>
+        }
+    }
+    return <>
+        <Header pageActive="Editor" />
+        <SplitView>
+            <SplitViewSectionLeft>
+                <video autoPlay loop style={{ width: 300 }} src={clipUrl}></video>
+            </SplitViewSectionLeft>
+            <SplitViewSectionRight>
+                {renderExportButtons()}
             </SplitViewSectionRight>
         </SplitView>
     </>

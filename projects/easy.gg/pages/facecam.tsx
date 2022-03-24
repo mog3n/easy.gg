@@ -253,7 +253,6 @@ const Facecam: NextPage = () => {
                 </button>
 
                 <button onClick={async () => {
-                    console.log(videoCrop, faceCrop);
 
                     if (videoRef.current) {
                         const {videoWidth, videoHeight, offsetLeft, offsetTop} = videoRef.current;
@@ -288,7 +287,12 @@ const Facecam: NextPage = () => {
                         console.log(faceCropAbsolute, gameCropAbsolute);
                         const file = new File([(await (await fetch(new Request(clipProxyUrl))).blob())], 'video.mp4');
                         const render = await renderFacecam(ffmpeg, file, faceCropAbsolute, gameCropAbsolute, 0, 0);
-                        setResults(render);
+                        router.push({
+                            pathname: '/export',
+                            query: {
+                              clip: render[0]
+                            }
+                          })
                     }
 
                 }}>Render</button>
