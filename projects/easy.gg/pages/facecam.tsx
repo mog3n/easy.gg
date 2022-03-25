@@ -72,8 +72,8 @@ const Facecam: NextPage = () => {
 
     const editorSteps: { [key: string]: EditorStep } = {
         "start": { label: "Start", key: 'start' },
-        "face": { label: "Select Face", key: 'face' },
-        "gameplay": { label: "Select Gameplay", key: 'gameplay' },
+        "face": { label: "Face Crop", key: 'face' },
+        "gameplay": { label: "Video Crop", key: 'gameplay' },
         "render": { label: "Render", key: 'render' }
     }
 
@@ -465,13 +465,13 @@ const SingleStepContainerDeselected = styled(SingleStepContainer)`
     border: 2px solid rgba(0,0,0,0);
 `
 const StepActiveIndicator = styled.div`
-    width: 15px;
+    width: 0;
     height: 60px;
     background-color: #24FF00;
     margin-right: 10px;
 `
 const StepInactiveIndicator = styled(StepActiveIndicator)`
-    background-color: #686868;
+    background-color: #68686800;
 `
 const StepNumberLabel = styled.div`
     font-size: 12px;
