@@ -64,10 +64,10 @@ const Export: NextPage = () => {
         }
     }
     return <>
-        <Header pageActive="Editor" />
+        <Header pageActive="Create" />
         <SplitView>
             <SplitViewSectionLeft>
-                <video autoPlay loop style={{ width: 300 }} src={clipUrl}></video>
+                <video onContextMenu={evt => evt.preventDefault()} autoPlay loop style={{ width: 300 }} src={clipUrl}></video>
             </SplitViewSectionLeft>
             <SplitViewSectionRight>
                 {renderExportButtons()}

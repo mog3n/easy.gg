@@ -1,8 +1,11 @@
 import axios from "axios";
+import { Button } from "baseui/button";
+import { Input } from "baseui/input";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
+import { FaSearch } from "react-icons/fa";
 import styled from "styled-components";
 import { HeroText1, HeroText2 } from ".";
 import { Header } from "../components/ui/Header";
@@ -44,7 +47,7 @@ const ImportPage: NextPage = (props) => {
         videoLink.searchParams.append('token', clipData.playbackAccessToken.value);
 
         return <>
-            <Header pageActive="Import" />
+            <Header pageActive="Create" />
             <HeaderBar>
                 <HeaderBackButton onClick={() => setSelectedClip(undefined)} src="/assets/icons/arrow-left.svg" />
                 <HeaderText>{selectedClip.title}</HeaderText>
@@ -54,30 +57,17 @@ const ImportPage: NextPage = (props) => {
             {memoizedVideoPlayer}
 
             <FlexCenterHorizontally>
-                {getTwitchClipMutation.isLoading ?
-                    <div style={{ color: '#fff' }}>Importing...</div>
-                    : <>
-                        <Image src="/assets/import-btn.svg" width={80} height={80} alt="Import" onClick={async () => {
-                            if (!getTwitchClipMutation.isLoading) {
-                                const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
-                                const dataUrl = URL.createObjectURL(clipResp.data);
-                                router.push({
-                                    pathname: '/create',
-                                    query: { clip: dataUrl },
-                                });
-                            }
-                        }}></Image>
-                        {/* <button onClick={async() => {
-                            if (!getTwitchClipMutation.isLoading) {
-                                // const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
-                                // const dataUrl = URL.createObjectURL(clipResp.data);
-                                router.push({
-                                    pathname: '/facecam',
-                                    query: { clip: videoLink.href },
-                                });
-                            }
-                        }}>Facecam</button> */}
-                    </>}
+                <div style={{height: 20}}></div>
+                <Button isLoading={getTwitchClipMutation.isLoading} onClick={async () => {
+                    if (!getTwitchClipMutation.isLoading) {
+                        const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
+                        const dataUrl = URL.createObjectURL(clipResp.data);
+                        router.push({
+                            pathname: '/create',
+                            query: { clip: dataUrl },
+                        });
+                    }
+                }} kind="secondary">Select Clip</Button>
             </FlexCenterHorizontally>
 
         </>
@@ -85,7 +75,7 @@ const ImportPage: NextPage = (props) => {
 
     if (selectedCreator && clipQuery.data) {
         return <>
-            <Header pageActive="Import" />
+            <Header pageActive="Create" />
             <HeaderBar>
                 <HeaderBackButton src="/assets/icons/arrow-left.svg" onClick={() => setSelectedCreator(undefined)} />
                 <HeaderText>{selectedCreator.display_name}&apos;s Twitch Clips</HeaderText>
@@ -118,11 +108,23 @@ const ImportPage: NextPage = (props) => {
     }
 
     return <>
-        <Header pageActive="Import" />
-        <div style={{ marginTop: 60, display: 'flex', justifyContent: 'space-around', alignItems: 'center', marginLeft: 20, marginRight: 20 }}>
-            <HeroText2 style={{marginBottom: 20, fontSize: 48}}>Search Twitch</HeroText2>
-            <LargeSearchBar value={creatorSearchQuery} onChange={(evt) => setCreatorSearchQuery(evt.target.value)} placeholder="Search for a creator" />
-            <div></div>
+        <Header pageActive="Create" />
+        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: 20, marginRight: 20 }}>
+            <H1 style={{ fontSize: 32, margin: 0 }}>Twitch Clips</H1>
+            <Input
+                endEnhancer={<FaSearch size={16} />}
+                autoFocus
+                placeholder="Search for a creator"
+                value={creatorSearchQuery}
+                onChange={(evt) => setCreatorSearchQuery(evt.currentTarget.value)}
+                overrides={{
+                    Root: {
+                        style: {
+                            width: '350px'
+                        }
+                    },
+                }}
+            />
         </div>
 
         {searchQuery.data ? <UserSearchResults>

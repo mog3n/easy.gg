@@ -9,7 +9,7 @@ const SelectSource: NextPage = () => {
     const router = useRouter();
 
     return <>
-        <Header />
+        <Header pageActive="Create"/>
         <CenteredDiv>
             <OptionsContainer>
                 <Option onClick={() => router.push('/upload')}>
@@ -26,7 +26,6 @@ const SelectSource: NextPage = () => {
                     </OptionLabel>
                 </Option>
             </OptionsContainer>
-
         </CenteredDiv>
     </>
 }
@@ -45,8 +44,13 @@ const Option = styled.div`
     align-items: center;
     border-radius: 10px;
     cursor: pointer;
-
     margin: 20px;
+
+    border: 2px solid rgba(0,0,0,0);
+    transition: 0.05s ease-in;
+    &:hover {
+        border: 2px solid #fff;
+    }
 `
 
 const OptionLabel = styled.div`

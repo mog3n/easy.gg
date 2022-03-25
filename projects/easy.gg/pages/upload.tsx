@@ -7,7 +7,7 @@ import { Header } from "../components/ui/Header";
 const Upload: NextPage = () => {
     const router = useRouter();
     return <>
-        <Header />
+        <Header pageActive="Create" />
         <CenteredDiv>
             <FileUploader
                 onDrop={async (acceptedFiles) => {

@@ -9,6 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 import { toaster } from 'baseui/toast';
 import { useSetRecoilState } from 'recoil';
 import { signInModalVisibleState } from '../../state/atoms/ui';
+import Link from 'next/link';
 
 const HeaderContainer = styled.div`
     width: 100%;
@@ -43,11 +44,21 @@ const BetaTestButton = styled.img`
     }
 `
 
-const MainItems = {Home: "Home", Editor: "Editor", Library: "Library", Login: "Login", Import: "Import"}
-const UserItems = {Settings: "Account Settings", SignOut: "Sign Out"}
+const MainItems = {
+    Home: "Home",
+    Create: "Create",
+    Editor: "Editor",
+    Library: "Library",
+    Login: "Login",
+    Import: "Import"
+}
+const UserItems = {
+    Settings: "Account Settings",
+    SignOut: "Sign Out"
+}
 const userProfilePhrases = ["Gamer since time", "Welcome back!", "Gamer since birth", "Spike planted!", "Ace!"];
 interface HeaderProps {
-    pageActive: "Home" | "Editor" | "Library" | "Login" | "Import"
+    pageActive?: "Home" | "Editor" | "Library" | "Login" | "Import" | "Create"
 }
 
 export const Header = (props: HeaderProps) => {
@@ -67,11 +78,12 @@ export const Header = (props: HeaderProps) => {
                 title="EZ GG"
                 mainItems={[
                     { label: MainItems.Home, active: isMainItemActive(MainItems.Home) },
-                    { label: MainItems.Editor, active: isMainItemActive(MainItems.Editor) },
-                    { label: MainItems.Import, active: isMainItemActive(MainItems.Import) }
+                    { label: MainItems.Create, active: isMainItemActive(MainItems.Create) },
+                    // { label: MainItems.Editor, active: isMainItemActive(MainItems.Editor) },
+                    // { label: MainItems.Import, active: isMainItemActive(MainItems.Import) }
                 ]}
                 userImgUrl="/assets/userprofile2.jpg"
-                username={user.phoneNumber}
+                username={user.phoneNumber || 'User'}
                 usernameSubtitle={userProfilePhrases[Math.round(Math.random()*userProfilePhrases.length)]}
                 userItems={[
                     { label: UserItems.Settings },
@@ -97,6 +109,9 @@ export const Header = (props: HeaderProps) => {
                             // Account Settings
                             router.push('/');
                             break;
+                        case MainItems.Create:
+                            router.push('/selectSource');
+                            break;
                         case MainItems.Editor:
                             router.push('/edit');
                             break;
@@ -112,7 +127,7 @@ export const Header = (props: HeaderProps) => {
                 }}
                 overrides={{
                     AppName: {
-                        component: () => <HeaderLogo src="/logo.svg" alt="Logo" />
+                        component: () => <Link href="/" passHref><HeaderLogo src="/logo.svg" alt="Logo" /></Link>
                     }
                 }}
             />
@@ -125,8 +140,9 @@ export const Header = (props: HeaderProps) => {
             title="EZ GG"
             mainItems={[
                 { label: MainItems.Home, active: isMainItemActive(MainItems.Home) },
-                { label: MainItems.Editor, active: isMainItemActive(MainItems.Editor) },
-                { label: MainItems.Import, active: isMainItemActive(MainItems.Import) },
+                { label: MainItems.Create, active: isMainItemActive(MainItems.Home) },
+                // { label: MainItems.Editor, active: isMainItemActive(MainItems.Editor) },
+                // { label: MainItems.Import, active: isMainItemActive(MainItems.Import) },
                 { label: MainItems.Login }
 
             ]}
@@ -135,6 +151,9 @@ export const Header = (props: HeaderProps) => {
                     case MainItems.Home:
                         // Account Settings
                         router.push('/');
+                        break;
+                    case MainItems.Create:
+                        router.push('/selectSource');
                         break;
                     case MainItems.Editor:
                         router.push('/edit');
