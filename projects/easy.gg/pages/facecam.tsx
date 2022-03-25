@@ -372,17 +372,23 @@ const Facecam: NextPage = () => {
         switch (selectedEditorStep.key) {
             case "start":
                 return <>
-                    <CenteredHorizontally style={{ margin: 20 }}>
-                        Use the sidebar on the left to navigate the different options.
+                    <CenteredHorizontally style={{ margin: 20, color: '#ddd' }}>
+                        Use the right sidebar to navigate the editor
                     </CenteredHorizontally>
                 </>
                 break;
             case "face":
                 return <>
+                    <CenteredHorizontally style={{ margin: 20, color: '#ddd' }}>
+                        {`Drag the box to fill the streamer's webcam`}
+                    </CenteredHorizontally>
                 </>
                 break;
             case "gameplay":
                 return <>
+                    <CenteredHorizontally style={{ margin: 20, color: '#ddd' }}>
+                        {`Drag the box to fill the main video`}
+                    </CenteredHorizontally>
                 </>
                 break;
             case "render":
@@ -408,9 +414,6 @@ const Facecam: NextPage = () => {
             <Header pageActive="Editor" />
 
             <Container>
-                <ContainerLeft>
-                    {renderEditorSteps()}
-                </ContainerLeft>
                 <ContainerRight>
                     <div>
                         <H1 style={{ textAlign: 'center', margin: 30 }}>Facecam</H1>
@@ -419,6 +422,9 @@ const Facecam: NextPage = () => {
                         {renderEditorStepPages()}
                     </div>
                 </ContainerRight>
+                <ContainerLeft>
+                    {renderEditorSteps()}
+                </ContainerLeft>
             </Container>
 
         </div>

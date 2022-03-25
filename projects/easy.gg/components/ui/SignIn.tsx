@@ -105,8 +105,9 @@ export const SignIn = () => {
 
     return <>
         <CenteredHorizontally>
-            <ModalHeader>Sign in or Register to EZ</ModalHeader>
-            <ModalBody>{`A verification code will be sent to this number.`}</ModalBody>
+            <img src="/logo.svg" style={{width: 90, marginTop: 50}}/>
+            <ModalHeader>Login or Sign Up</ModalHeader>
+            <ModalBody>{`A verification code will be sent to your device`}</ModalBody>
             <ModalBody>
                 <PhoneInput
                     autoFocus
