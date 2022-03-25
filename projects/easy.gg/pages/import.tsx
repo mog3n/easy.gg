@@ -171,7 +171,6 @@ const UserSearchResults = styled.div`
 
 const UserSearchResultContainer = styled.div`
     cursor: pointer;
-    border-radius: 15px;
     background-color: #1E1E1E;
     margin: 10px;
     padding: 10px;
@@ -179,9 +178,11 @@ const UserSearchResultContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: 0.1s ease-in;
+    transition: 0.05s ease-in;
+    border: 2px solid #ffffff00;
     &:hover {
-        background-color: #424242;
+        background-color: #333;
+        /* border: 2px solid #ffffff; */
     }
 `
 const UserSearchResultProfileImg = styled.img`
@@ -214,19 +215,19 @@ export const HeaderBackButton = styled.img`
 
 export const ClipPreviewContainer = styled.div`
     background-color: #1E1E1E;
-    border-radius: 15px;
     padding: 10px;
     margin: 10px;
     cursor: pointer;
     transition: 0.1s ease-in;
+    border: 2px solid rgba(0,0,0,0);
     &:hover {
-        background-color: #424242;
+        /* border: 2px solid #fff; */
+        background-color: #333;
     }
 `
 
 export const ClipPreviewImage = styled.img`
     width: 300px;
-    border-radius: 9px;
 `
 
 export const ClipPreviewRow = styled.div`

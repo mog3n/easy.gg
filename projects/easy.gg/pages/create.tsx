@@ -18,7 +18,7 @@ const Create: NextPage = () => {
         <Header pageActive="Create" />
         <ColumnsContainer>
             <VideoContainer>
-                <video style={{width: '100%', borderRadius: 10}} controls autoPlay loop src={clipUrl} />
+                <video style={{width: '100%'}} controls autoPlay loop src={clipUrl} />
             </VideoContainer>
             <ContentSelectContainer>
                 <H1 style={{marginBottom: 5}}>Apply a template</H1>
@@ -37,7 +37,7 @@ const Create: NextPage = () => {
                     </Effect>
                     <Effect onClick={() => {
                         router.push({
-                            pathname: '/facecam',
+                            pathname: '/edit',
                             query: {
                                 clip: clipUrl
                             }
@@ -73,7 +73,7 @@ const ContentSelectContainer = styled.div`
 
 const EffectsContainer = styled.div`
     display: flex;
-    margin-top: 20px;
+    margin-top: 50px;
 `
 
 const Effect = styled.div`
@@ -81,16 +81,16 @@ const Effect = styled.div`
     /* border-radius: 3px; */
     transition: 0.05s ease-in;
     border: 2px solid rgba(0,0,0,0);
-    border-radius: 8px;
+    /* border-radius: 8px; */
     margin-right: 20px;
     &:hover {
         border: 2px solid #ffffff;
     }
 `
 const EffectPreview = styled.img`
-    width: 200px;
-    height: 400px;
-    border-radius: 5px 5px 5px 5px;
+    width: 160px;
+    height: 280px;
+    /* border-radius: 5px 5px 5px 5px; */
     object-fit: cover;
 `
 const EffectName = styled.div`
