@@ -114,7 +114,8 @@ export const SignIn = () => {
                     country={country}
                     onCountryChange={({ option }) => {
                         if (option) {
-                            setCountry(option);
+                            const country = option as any;
+                            setCountry(country);
                         }
                     }}
                     text={phoneNumber}
