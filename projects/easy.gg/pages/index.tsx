@@ -126,7 +126,7 @@ const Home: NextPage = () => {
     return <SiteContainer>
         <Header pageActive="Home"/>
         <HeroContainer>
-            <HeroText1>Professional gaming clips</HeroText1>
+            <HeroText1>Create viral gaming clips</HeroText1>
             <HeroText2>in seconds.</HeroText2>
                 <EditorMobile src="/editormobile.svg" alt="Editor" />
                 <Editor src="/editorb.svg" alt="Editor" />

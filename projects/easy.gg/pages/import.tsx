@@ -5,7 +5,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaClock, FaEye, FaSearch, FaTimes } from "react-icons/fa";
 import styled from "styled-components";
 import { HeroText1, HeroText2 } from ".";
 import { Header } from "../components/ui/Header";
@@ -88,12 +88,17 @@ const ImportPage: NextPage = (props) => {
                     return <ClipPreviewContainer key={clip.id} onClick={() => setSelectedClip(clip)}>
                         <div><ClipPreviewImage src={`${clipThumbnailUrlProxy(clip.thumbnail_url)}`} style={{ width: 300 }} /></div>
                         <ClipPreviewRow>
-                            <div>
-                                {Math.round(clip.duration)}s
+                            <div style={{opacity: 0.7}}>
+                                {new Date(clip.created_at).toLocaleString('en-US', {month: 'short', day: '2-digit', year: 'numeric'})}
                             </div>
-                            <FlexCenterVertically>
-                                <SmallIcon src="/assets/icons/eye.svg" style={{ marginRight: 5 }} />
-                                {clip.view_count}
+                            <FlexCenterVertically style={{opacity: 0.7}}>
+                                <div style={{marginRight: 10, display: 'flex', alignItems: 'center'}}>
+                                    <FaClock size={13} style={{marginRight: 5}}/>{Math.round(clip.duration)}
+                                </div>
+                                <div style={{marginRight: 10, display: 'flex', alignItems: 'center'}}>
+                                    <FaEye  size={16} style={{marginRight: 5}}/> {clip.view_count.toLocaleString()}
+                                </div>
+                               
                             </FlexCenterVertically>
                         </ClipPreviewRow>
                         <ClipPreviewTitle>{clip.title}</ClipPreviewTitle>
@@ -110,7 +115,7 @@ const ImportPage: NextPage = (props) => {
     return <>
         <Header pageActive="Create" />
         <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: 20, marginRight: 20 }}>
-            <H1 style={{ fontSize: 32, margin: 0 }}>Twitch Clips</H1>
+            <H1 style={{ fontSize: 32, margin: 0 }}>Search Twitch Creator</H1>
             <Input
                 endEnhancer={<FaSearch size={16} />}
                 autoFocus
