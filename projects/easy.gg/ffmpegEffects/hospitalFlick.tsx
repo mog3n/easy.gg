@@ -54,6 +54,8 @@ export const HospitalFlick = () => {
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
             '-preset', 'ultrafast',
+            '-maxrate', '3M',
+            '-bufsize', '3M',
             'A.mp4'
         );
 
@@ -70,6 +72,8 @@ export const HospitalFlick = () => {
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
             '-preset', 'ultrafast',
+            '-maxrate', '3M',
+            '-bufsize', '3M',
             'B.mp4'
         )
 
@@ -96,6 +100,8 @@ export const HospitalFlick = () => {
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
             '-preset', 'ultrafast',
+            '-maxrate', '3M',
+            '-bufsize', '3M',
             'B-slowed.mp4',
         );
 
@@ -127,6 +133,8 @@ export const HospitalFlick = () => {
             '-i', 'B-slowed.mp4',
             '-vf', `hue='h=90: b=max(0,5-5*t)', vignette`, // << test this
             '-preset', 'ultrafast',
+            '-maxrate', '3M',
+            '-bufsize', '3M',
             'B-slow-edited.mp4'
         );
 
@@ -153,6 +161,8 @@ export const HospitalFlick = () => {
             '-c:v', 'libx264',
             '-c:a', 'aac',
             '-preset', 'ultrafast',
+            '-maxrate', '3M',
+            '-bufsize', '3M',
             'output.mp4'
         );
 
