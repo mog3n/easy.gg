@@ -335,13 +335,13 @@ const Facecam: NextPage = () => {
                                     </div>
                                 </div>
 
-                                <FaArrowRight size={18} color="#fff" style={{ marginRight: 10 }} />
+                                {/* <FaArrowRight size={18} color="#fff" style={{ marginRight: 10 }} /> */}
                             </SingleStepContainer>
                         </>
                     } else if (isPreviousStep) {
                         // render checkmarks
                         return <>
-                            <SingleStepContainer onClick={() => onStepSelected(step)} style={{ opacity: 0.6, justifyContent: 'space-between' }}>
+                            <SingleStepContainerDeselected onClick={() => onStepSelected(step)} style={{ justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <StepInactiveIndicator />
                                     <div>
@@ -350,17 +350,17 @@ const Facecam: NextPage = () => {
                                     </div>
                                 </div>
                                 <FaCheck size={18} color="#fff" style={{ marginRight: 10 }} />
-                            </SingleStepContainer>
+                            </SingleStepContainerDeselected>
                         </>
                     } else {
                         return <>
-                            <SingleStepContainer onClick={() => onStepSelected(step)} style={{ opacity: 0.6 }}>
+                            <SingleStepContainerDeselected onClick={() => onStepSelected(step)} style={{ }}>
                                 <StepInactiveIndicator></StepInactiveIndicator>
                                 <div>
                                     <StepNumberLabel>Step {index + 1}</StepNumberLabel>
                                     <StepLabel>{step.label}</StepLabel>
                                 </div>
-                            </SingleStepContainer>
+                            </SingleStepContainerDeselected>
                         </>
                     }
                 })}
@@ -388,7 +388,7 @@ const Facecam: NextPage = () => {
             case "render":
                 return <>
                     <div style={{ margin: 20, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                        <div><Button onClick={renderFacecrop} isLoading={isRendering}>Render</Button></div>
+                        <div><Button onClick={renderFacecrop} kind="secondary" isLoading={isRendering}>Render</Button></div>
 
                         {isRendering ? <>
                             <div style={{ height: 20 }}></div>
@@ -454,10 +454,15 @@ const SingleStepContainer = styled.div`
     background-color: #414141;
     margin: 5px;
     cursor: pointer;
-    transition: 0.1s ease-in;
+    transition: 0.05s ease-in;
+    border: 2px solid #fff;
     &:hover{
-        background-color: #535353;
+        border: 2px solid #fff;
+        /* background-color: #535353; */
     }
+`
+const SingleStepContainerDeselected = styled(SingleStepContainer)`
+    border: 2px solid rgba(0,0,0,0);
 `
 const StepActiveIndicator = styled.div`
     width: 15px;
