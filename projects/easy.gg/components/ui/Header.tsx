@@ -140,11 +140,10 @@ export const Header = (props: HeaderProps) => {
             title="EZ GG"
             mainItems={[
                 { label: MainItems.Home, active: isMainItemActive(MainItems.Home) },
-                { label: MainItems.Create, active: isMainItemActive(MainItems.Home) },
+                { label: MainItems.Create, active: isMainItemActive(MainItems.Create) },
                 // { label: MainItems.Editor, active: isMainItemActive(MainItems.Editor) },
                 // { label: MainItems.Import, active: isMainItemActive(MainItems.Import) },
                 { label: MainItems.Login }
-
             ]}
             onMainItemSelect={(item) => {
                 switch(item.label) {

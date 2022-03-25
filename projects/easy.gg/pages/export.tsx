@@ -23,7 +23,7 @@ const Export: NextPage = () => {
     const download = () => {
         const link = document.createElement('a');
         link.href = clipUrl;
-        link.download = 'Hospital Flick - EZ.mp4';
+        link.download = 'EZGG Clip.mp4';
         link.click();
     }
 
@@ -55,9 +55,9 @@ const Export: NextPage = () => {
             </>
         } else {
             return <>
-                <H1>Sign in to save your clip</H1>
+                <H1>Download, export and share to TikTok!</H1>
                 <ExportButton onClick={() => setIsSignInModalVisible(true) }>
-                    <IoMdLogIn size={32} style={{marginRight: 10}}/>
+                    <IoMdLogIn size={26} style={{marginRight: 10}}/>
                     Sign In
                 </ExportButton>
             </>

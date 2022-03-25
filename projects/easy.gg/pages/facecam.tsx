@@ -335,7 +335,7 @@ const Facecam: NextPage = () => {
                                     </div>
                                 </div>
 
-                                {/* <FaArrowRight size={18} color="#fff" style={{ marginRight: 10 }} /> */}
+                                <FaArrowRight size={18} color="#fff" style={{ marginRight: 10 }} />
                             </SingleStepContainer>
                         </>
                     } else if (isPreviousStep) {
@@ -349,12 +349,12 @@ const Facecam: NextPage = () => {
                                         <StepLabel>{step.label}</StepLabel>
                                     </div>
                                 </div>
-                                <FaCheck size={18} color="#fff" style={{ marginRight: 10 }} />
+                                <FaCheck size={18} color="#fff" style={{ marginRight: 15 }} />
                             </SingleStepContainerDeselected>
                         </>
                     } else {
                         return <>
-                            <SingleStepContainerDeselected onClick={() => onStepSelected(step)} style={{ }}>
+                            <SingleStepContainerDeselected onClick={() => onStepSelected(step)} style={{}}>
                                 <StepInactiveIndicator></StepInactiveIndicator>
                                 <div>
                                     <StepNumberLabel>Step {index + 1}</StepNumberLabel>
@@ -372,21 +372,21 @@ const Facecam: NextPage = () => {
         switch (selectedEditorStep.key) {
             case "start":
                 return <>
-                    <CenteredHorizontally style={{ margin: 20, color: '#ddd' }}>
-                        Use the right sidebar to navigate the editor
+                    <CenteredHorizontally style={{ margin: 20 }}>
+                        {`Use the left sidebar to navigate the editor`}
                     </CenteredHorizontally>
                 </>
                 break;
             case "face":
                 return <>
-                    <CenteredHorizontally style={{ margin: 20, color: '#ddd' }}>
+                    <CenteredHorizontally style={{ margin: 20 }}>
                         {`Drag the box to fill the streamer's webcam`}
                     </CenteredHorizontally>
                 </>
                 break;
             case "gameplay":
                 return <>
-                    <CenteredHorizontally style={{ margin: 20, color: '#ddd' }}>
+                    <CenteredHorizontally style={{ margin: 20 }}>
                         {`Drag the box to fill the main video`}
                     </CenteredHorizontally>
                 </>
@@ -400,6 +400,7 @@ const Facecam: NextPage = () => {
                             <div style={{ height: 20 }}></div>
                             {Math.min(Math.max(Math.round(ffmpegProgress * 100), 0), 100)}{`%`}
                             <ProgressBar value={ffmpegProgress * 100} />
+                            {`Hang tight, we're rendering your video!`}
                         </> : <></>}
                     </div>
                 </>
@@ -414,17 +415,19 @@ const Facecam: NextPage = () => {
             <Header pageActive="Editor" />
 
             <Container>
+                <ContainerLeft>
+                    {/* <div style={{margin: 5, textAlign: 'left', marginBottom: 10, opacity: 0.6}}>Navigate the Editor</div> */}
+                    {renderEditorSteps()}
+                </ContainerLeft>
                 <ContainerRight>
                     <div>
-                        <H1 style={{ textAlign: 'center', margin: 30 }}>Facecam</H1>
+                        <H1 style={{ textAlign: 'center', marginBottom: 30 }}>Facecam</H1>
                         {renderToolOverlay()}
                         <video src={clipProxyUrl} style={{ width: '100%' }} ref={videoRef}></video>
                         {renderEditorStepPages()}
                     </div>
                 </ContainerRight>
-                <ContainerLeft>
-                    {renderEditorSteps()}
-                </ContainerLeft>
+
             </Container>
 
         </div>
@@ -462,6 +465,7 @@ const SingleStepContainer = styled.div`
     cursor: pointer;
     transition: 0.05s ease-in;
     border: 2px solid #fff;
+    border-radius: 10px;
     &:hover{
         border: 2px solid #fff;
         /* background-color: #535353; */
@@ -471,8 +475,9 @@ const SingleStepContainerDeselected = styled(SingleStepContainer)`
     border: 2px solid rgba(0,0,0,0);
 `
 const StepActiveIndicator = styled.div`
-    width: 0;
+    width: 13px;
     height: 60px;
+    border-radius: 7px 0 0 7px;
     background-color: #24FF00;
     margin-right: 10px;
 `
