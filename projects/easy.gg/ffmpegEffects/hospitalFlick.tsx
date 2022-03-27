@@ -38,18 +38,20 @@ export const HospitalFlick = () => {
         const aFile = await fetchFile(await getAudioFile());
         ffmpeg.FS('writeFile', 'audio', aFile);
 
+
         const vFile = await fetchFile(videoFile);
         ffmpeg.FS('writeFile', 'video', vFile);
 
         const FRAMERATE = 30;
 
         const videoCropLeft = userSelectedVideoDurationPoint - hospitalFlickSound.marker;
-        const audioDuration = hospitalFlickSound.duration;
         // Before the inciting point
         setGeneratingVideoProgress(1);
+
+
         await ffmpeg.run(
             '-ss', videoCropLeft.toFixed(2),
-            '-t', audioDuration.toString(),
+            '-t', hospitalFlickSound.marker.toString(),
             '-i', 'video',
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
@@ -60,14 +62,14 @@ export const HospitalFlick = () => {
         );
 
         const SLOWMOFACTOR = 2;
-
-        const slowMoEnd = ((audioDuration - hospitalFlickSound.marker) / SLOWMOFACTOR).toFixed(2);
+        const slowMoStart = videoCropLeft + hospitalFlickSound.marker;
+        const slowMoEnd = (hospitalFlickSound.duration - hospitalFlickSound.marker) / SLOWMOFACTOR;
 
         setGeneratingVideoProgress(2);
         // trim slow mo part
         await ffmpeg.run(
-            '-ss', hospitalFlickSound.marker.toFixed(2),
-            '-t', slowMoEnd,
+            '-ss', slowMoStart.toFixed(2),
+            '-t', slowMoEnd.toFixed(2),
             '-i', 'video',
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
@@ -174,3 +176,5 @@ export const HospitalFlick = () => {
 
     return { getAudioFile, generateVideo, getVideoProgressLength, getMinMarkerDuration, getSoundDuration }
 }
+
+export const hospitalFlick = HospitalFlick();

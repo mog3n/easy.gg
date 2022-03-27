@@ -14,12 +14,10 @@ import { fetchFile } from '@ffmpeg/ffmpeg';
 import { convertSecondsToTimestamp } from '../helpers/helpers';
 import { ProgressBar } from 'baseui/progress-bar';
 import { useRouter } from 'next/router';
-import { HospitalFlick } from '../ffmpegEffects/hospitalFlick';
+import { hospitalFlick, HospitalFlick } from '../ffmpegEffects/hospitalFlick';
 import { Header } from '../components/ui/Header';
 
 export const PROCESSING_VIDEO_STEP = 0;
-
-const hospitalFlick = HospitalFlick();
 
 const Edit: NextPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
