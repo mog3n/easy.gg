@@ -46,6 +46,41 @@ const Create: NextPage = () => {
                         <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
                         <EffectName>Hospital Flick</EffectName>
                     </Effect>
+
+                    <Effect onClick={() => {
+                        router.push({
+                            pathname: '/edit2',
+                            query: {
+                                clip: clipUrl
+                            }
+                        })
+                    }}>
+                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
+                        <EffectName>Master at Work</EffectName>
+                    </Effect>
+                    <Effect onClick={() => {
+                        router.push({
+                            pathname: '/edit2',
+                            query: {
+                                clip: clipUrl
+                            }
+                        })
+                    }}>
+                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
+                        <EffectName>Mask Off</EffectName>
+                    </Effect>
+                    <Effect onClick={() => {
+                        router.push({
+                            pathname: '/edit2',
+                            query: {
+                                clip: clipUrl
+                            }
+                        })
+                    }}>
+                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
+                        <EffectName>Stay with Me</EffectName>
+                    </Effect>
+
                 </EffectsContainer>
             </ContentSelectContainer>
         </ColumnsContainer>
