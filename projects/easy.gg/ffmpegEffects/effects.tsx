@@ -1,34 +1,30 @@
 import { fetchFile, FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dispatch, SetStateAction } from "react";
+import { SimpleSoundClip } from "../types/editor";
 
-interface SimpleSoundClip {
-    audioURL: string,
-    marker: number,
-    duration: number,
+export interface SoundEffectType {
+    getAudioFile: () => Promise<File>;
+    getVideoProgressLength: () => number;
+    getMinMarkerDuration: () => number;
+    getSoundDuration: () => number;
+    generateVideo: (ffmpeg: FFmpeg, videoFile: File, videoMarker: number, generatingVideoProgress: Dispatch<SetStateAction<number>>) => Promise<string>;
 }
 
-const hospitalFlickSound: SimpleSoundClip = {
-    audioURL: '/soundclips/hospital.mp3',
-    marker: 4.26,
-    duration: 7.497143,
-}
-
-export const HospitalFlick = () => {
+export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
     const getAudioFile = async () => {
-        const sound = await fetch(new Request(hospitalFlickSound.audioURL));
+        const sound = await fetch(new Request(soundEffect.audioURL));
         const soundBlob = await sound.blob();
-        return (new File([soundBlob], 'hospitalFlick'));
+        return (new File([soundBlob], 'soundEffect'));
     }
     const getVideoProgressLength = () => {
         return 5;
     }
     const getMinMarkerDuration = () => {
-        return hospitalFlickSound.marker
+        return soundEffect.marker
     }
     const getSoundDuration = () => {
-        return hospitalFlickSound.duration
+        return soundEffect.duration
     }
-
     const generateVideo = async (
         ffmpeg: FFmpeg,
         videoFile: File,
@@ -38,20 +34,19 @@ export const HospitalFlick = () => {
         const aFile = await fetchFile(await getAudioFile());
         ffmpeg.FS('writeFile', 'audio', aFile);
 
-
         const vFile = await fetchFile(videoFile);
         ffmpeg.FS('writeFile', 'video', vFile);
 
         const FRAMERATE = 30;
 
-        const videoCropLeft = userSelectedVideoDurationPoint - hospitalFlickSound.marker;
+        const videoCropLeft = userSelectedVideoDurationPoint - soundEffect.marker;
         // Before the inciting point
         setGeneratingVideoProgress(1);
 
 
         await ffmpeg.run(
             '-ss', videoCropLeft.toFixed(2),
-            '-t', hospitalFlickSound.marker.toString(),
+            '-t', soundEffect.marker.toString(),
             '-i', 'video',
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
@@ -61,9 +56,9 @@ export const HospitalFlick = () => {
             'A.mp4'
         );
 
-        const SLOWMOFACTOR = 2;
-        const slowMoStart = videoCropLeft + hospitalFlickSound.marker;
-        const slowMoEnd = (hospitalFlickSound.duration - hospitalFlickSound.marker) / SLOWMOFACTOR;
+        const SLOWMOFACTOR = soundEffect.default_video_effects?.slow_mo || 2;
+        const slowMoStart = videoCropLeft + soundEffect.marker;
+        const slowMoEnd = (soundEffect.duration - soundEffect.marker) / SLOWMOFACTOR;
 
         setGeneratingVideoProgress(2);
         // trim slow mo part
@@ -90,7 +85,7 @@ export const HospitalFlick = () => {
             // `,
             `
                               [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slowInt],
-                              [slowInt]setpts=${SLOWMOFACTOR}*PTS[slow]
+                              [slowInt]setpts=${SLOWMOFACTOR.toFixed(0)}*PTS[slow]
                             `,
             // `
             //   [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slow]
@@ -131,9 +126,18 @@ export const HospitalFlick = () => {
 
         setGeneratingVideoProgress(4);
         // animate the hue (CHANGE HUE + BRIGHTNESS EFFECT)
+
+        // hue
+
         await ffmpeg.run(
             '-i', 'B-slowed.mp4',
-            '-vf', `hue='h=90: b=max(0,5-5*t)', vignette`, // << test this
+            '-vf', `
+                ${/* COMMENT: Change Hue & Brightness */""}
+                hue='h=${soundEffect.default_video_effects?.hue || `0`}
+                ${soundEffect.default_video_effects?.flash ? `: b=max(0,5-5*t)` : ``}',
+                ${/* COMMENT: Apply Vignette */""}
+                ${soundEffect.default_video_effects?.vignette ? "vignette" : ""}
+                `, // << test this
             '-preset', 'ultrafast',
             '-maxrate', '3M',
             '-bufsize', '3M',
@@ -173,8 +177,5 @@ export const HospitalFlick = () => {
 
         return url;
     }
-
     return { getAudioFile, generateVideo, getVideoProgressLength, getMinMarkerDuration, getSoundDuration }
 }
-
-export const hospitalFlick = HospitalFlick();

@@ -1,11 +1,9 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import { DetailedHTMLProps, LegacyRef, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState, VideoHTMLAttributes } from 'react'
-import styles from '../styles/Home.module.css'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FileUploader } from 'baseui/file-uploader';
 import { Button } from 'baseui/button';
 import axios from 'axios';
-import { Input } from 'baseui/input';
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
@@ -14,14 +12,16 @@ import { fetchFile } from '@ffmpeg/ffmpeg';
 import { convertSecondsToTimestamp } from '../helpers/helpers';
 import { ProgressBar } from 'baseui/progress-bar';
 import { useRouter } from 'next/router';
-import { hospitalFlick, HospitalFlick } from '../ffmpegEffects/hospitalFlick';
 import { Header } from '../components/ui/Header';
+import { SoundEffectType } from '../ffmpegEffects/effects';
+import { hospitalFlick } from '../ffmpegEffects/sounds';
 
 export const PROCESSING_VIDEO_STEP = 0;
 
 const Edit: NextPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [soundEffect, setSoundEffect] = useState<SoundEffectType>(hospitalFlick);
 
   const [videoMarkerDuration, setVideoMarkerDuration] = useState(0);
 
@@ -49,12 +49,17 @@ const Edit: NextPage = () => {
   }
 
   useEffect(() => {
+    const asyncEffect = async () => {
+      const sound = await soundEffect.getAudioFile();
+      setAudioFile(sound);
+    }
+    asyncEffect();
+  }, [soundEffect])
+
+  useEffect(() => {
     checkFfmpeg();
 
     const asyncEffect = async () => {
-      const sound = await hospitalFlick.getAudioFile();
-      setAudioFile(sound);
-
       // check router for params
       if (router.query.clip) {
         const blobUrl = router.query.clip as string;
@@ -73,7 +78,7 @@ const Edit: NextPage = () => {
   }, [])
 
   const generateVideo = async () => {
-    if (hospitalFlick.getMinMarkerDuration() > videoMarkerDuration) {
+    if (soundEffect.getMinMarkerDuration() > videoMarkerDuration) {
       alert("Clip is too short!");
       return;
     }
@@ -83,7 +88,7 @@ const Edit: NextPage = () => {
       try {
         setIsGeneratingVideo(true);
         setRenderStartTime(new Date());
-        const urlResult = await hospitalFlick.generateVideo(ffmpeg, videoFile, videoMarkerDuration, setGeneratingVideoProgress);
+        const urlResult = await soundEffect.generateVideo(ffmpeg, videoFile, videoMarkerDuration, setGeneratingVideoProgress);
         router.push({
           pathname: '/export',
           query: {
@@ -135,7 +140,7 @@ const Edit: NextPage = () => {
           }}
           onLoadedData={(evt) => {
             const duration = evt.currentTarget.duration;
-            const calculatedTimelineWidth = 350/hospitalFlick.getSoundDuration() * duration;
+            const calculatedTimelineWidth = 350/soundEffect.getSoundDuration() * duration;
             setTimelineWidth(calculatedTimelineWidth);
             setVideoTimelinePos(calculatedTimelineWidth/2);
           }}
@@ -165,7 +170,7 @@ const Edit: NextPage = () => {
     }
   }, [audioFile])
 
-  const maxProgressSteps = hospitalFlick.getVideoProgressLength();
+  const maxProgressSteps = soundEffect.getVideoProgressLength();
   const normalizeFfmpegProgress = Math.min(Math.max(ffmpegProgress, 0), 100);
   const renderProgress = ((normalizeFfmpegProgress*100)*(1/maxProgressSteps)) + (((generatingVideoProgress-1)/maxProgressSteps)*100);
 
@@ -246,7 +251,7 @@ const Edit: NextPage = () => {
             zIndex: 998,
           }}>
             <img src="/audio.svg" style={{
-              transform: `translateY(40px) translateX(${-((hospitalFlick.getMinMarkerDuration()/hospitalFlick.getSoundDuration()*350) - (350/2))}px)`,
+              transform: `translateY(40px) translateX(${-((soundEffect.getMinMarkerDuration()/soundEffect.getSoundDuration()*350) - (350/2))}px)`,
               pointerEvents: 'none',
               userSelect: 'none',
               MozUserSelect: 'none',
