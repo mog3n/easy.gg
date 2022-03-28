@@ -14,7 +14,7 @@ import { ProgressBar } from 'baseui/progress-bar';
 import { useRouter } from 'next/router';
 import { Header } from '../components/ui/Header';
 import { SoundEffectType } from '../ffmpegEffects/effects';
-import { hospitalFlick } from '../ffmpegEffects/sounds';
+import { hospitalFlick, masterAtWork, maskOff } from '../ffmpegEffects/sounds';
 
 export const PROCESSING_VIDEO_STEP = 0;
 
@@ -66,6 +66,19 @@ const Edit: NextPage = () => {
         console.log(blobUrl);
         const blob = await axios.get(blobUrl, { responseType: 'blob' })
         setVideoFile(new File([blob.data], 'videoFile'));
+      }
+      if (router.query.effect) {
+        const effectString = router.query.effect as string;
+        console.log(effectString)
+        const presets: {[name: string]: SoundEffectType} = {
+          "hospitalFlick": hospitalFlick,
+          "maskOff" : maskOff,
+          "masterAtWork" : masterAtWork,
+        }
+        if ((effectString in presets)){
+          const effectToPassIn = presets[effectString];
+          setSoundEffect(effectToPassIn)
+        }
       }
     }
     asyncEffect();

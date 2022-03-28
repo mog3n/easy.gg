@@ -39,19 +39,20 @@ const Create: NextPage = () => {
                         router.push({
                             pathname: '/edit',
                             query: {
-                                clip: clipUrl
+                                clip: clipUrl,
+                                effect: 'hospitalFlick',
                             }
                         })
                     }}>
                         <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
                         <EffectName>Hospital Flick</EffectName>
                     </Effect>
-
                     <Effect onClick={() => {
                         router.push({
-                            pathname: '/edit2',
+                            pathname: '/edit',
                             query: {
-                                clip: clipUrl
+                                clip: clipUrl,
+                                effect: 'masterAtWork'
                             }
                         })
                     }}>
@@ -60,9 +61,10 @@ const Create: NextPage = () => {
                     </Effect>
                     <Effect onClick={() => {
                         router.push({
-                            pathname: '/edit2',
+                            pathname: '/edit',
                             query: {
-                                clip: clipUrl
+                                clip: clipUrl,
+                                effect: 'maskOff'
                             }
                         })
                     }}>
@@ -71,7 +73,7 @@ const Create: NextPage = () => {
                     </Effect>
                     <Effect onClick={() => {
                         router.push({
-                            pathname: '/edit2',
+                            pathname: '/edit',
                             query: {
                                 clip: clipUrl
                             }
