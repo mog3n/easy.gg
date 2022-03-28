@@ -19,7 +19,7 @@ const hospitalFlickSound: SimpleSoundClip = {
 
 const masterAtWorkSound: SimpleSoundClip = {
     audioURL: '/soundclips/masteratwork.mp3',
-    marker: 7.410368,
+    marker: 7.24752,
     duration: 14.04,
     creator: 'TikTok God: Robert Wan',
     name: 'Master At Work',
