@@ -17,7 +17,7 @@ const hospitalFlickSound: SimpleSoundClip = {
     }
 }
 
-const masterAtWorkSound: SimpleSoundClip = {
+const masterAtWorkSound: SimpleSoundClip = { 
     audioURL: '/soundclips/masteratwork.mp3',
     marker: 7.24752,
     duration: 14.04,
