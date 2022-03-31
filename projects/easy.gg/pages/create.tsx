@@ -39,13 +39,50 @@ const Create: NextPage = () => {
                         router.push({
                             pathname: '/edit',
                             query: {
-                                clip: clipUrl
+                                clip: clipUrl,
+                                effect: 'hospitalFlick',
                             }
                         })
                     }}>
                         <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
                         <EffectName>Hospital Flick</EffectName>
                     </Effect>
+                    <Effect onClick={() => {
+                        router.push({
+                            pathname: '/edit',
+                            query: {
+                                clip: clipUrl,
+                                effect: 'masterAtWork'
+                            }
+                        })
+                    }}>
+                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
+                        <EffectName>Master at Work</EffectName>
+                    </Effect>
+                    <Effect onClick={() => {
+                        router.push({
+                            pathname: '/edit',
+                            query: {
+                                clip: clipUrl,
+                                effect: 'maskOff'
+                            }
+                        })
+                    }}>
+                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
+                        <EffectName>Mask Off</EffectName>
+                    </Effect>
+                    <Effect onClick={() => {
+                        router.push({
+                            pathname: '/edit',
+                            query: {
+                                clip: clipUrl
+                            }
+                        })
+                    }}>
+                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
+                        <EffectName>Stay with Me</EffectName>
+                    </Effect>
+
                 </EffectsContainer>
             </ContentSelectContainer>
         </ColumnsContainer>
