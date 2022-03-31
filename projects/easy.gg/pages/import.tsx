@@ -37,7 +37,6 @@ const ImportPage: NextPage = (props) => {
     }, [selectedClip, clipVideoData.isSuccess])
 
     if (selectedClip && clipVideoData.isSuccess) {
-
         return <>
             <Header pageActive="Create" />
             <HeaderBar>
@@ -45,9 +44,7 @@ const ImportPage: NextPage = (props) => {
                 <HeaderText>{selectedClip.title}</HeaderText>
                 <div></div>
             </HeaderBar>
-
             {memoizedVideoPlayer}
-
             <FlexCenterHorizontally>
                 <div style={{height: 20}}></div>
                 <Button isLoading={getTwitchClipMutation.isLoading} onClick={async () => {
@@ -61,7 +58,6 @@ const ImportPage: NextPage = (props) => {
                     }
                 }} kind="secondary">Select Clip</Button>
             </FlexCenterHorizontally>
-
         </>
     }
 

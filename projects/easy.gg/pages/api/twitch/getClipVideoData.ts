@@ -69,38 +69,37 @@ export default async function handler(
 
     const filename = url.pathname.replace("/", "");
 
-    console.log(videoUrl.href);
-
     // Copy this video over to our bucket
-    bucket.file(`clips/${filename}`).exists().then(exists => {
-      if (!exists) {
-        axios.get(videoUrl.href, { responseType: 'blob' }).then(videoData => {
-          bucket.file(`clips/${filename}`).save(videoData.data).then(response => {
-            const file = bucket.file(`clips/${filename}`);
-            file.getSignedUrl({
-              action: 'read',
-              expires: '01-01-2900',
-            }).then(urls => {
-              res.status(200).send({ data: data.data.data, ezLink: urls[0] })
-            })
-          }).catch(err => {
-            console.error("Could not save clip into bucket");
-            handleAPIError(err, 'Something went wrong...', res);
-          })
-        });
+    const exists = await bucket.file(`clips/${filename}`).exists();
 
-      } else {
-        const file = bucket.file(`clips/${filename}`);
-        file.getSignedUrl({
-          action: 'read',
-          expires: '01-01-2900',
-        }).then(urls => {
-          res.status(200).send({ data: data.data.data, ezLink: urls[0] })
-        })
+    if (!exists[0]) {
+      // Copy file to firebase
+      const videoData = await axios.get(videoUrl.href, { responseType: 'arraybuffer' });
+      const saveFile = await bucket.file(`clips/${filename}`).save(videoData.data, {
+        contentType: 'video/mp4',
+      })
+      const file = bucket.file(`clips/${filename}`);
+      const makePublic = await file.makePublic();
 
-      }
-    });
+      const signedUrls = await file.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2900',
+      })
+      const ezProxyLink = signedUrls[0].replace("https://storage.googleapis.com/ezgg-14fd6.appspot.com/", "/proxy/storage/");
+      res.status(200).send({ data: data.data.data, ezLink: ezProxyLink })
+    } else {
+      //  Send existing file to user
+      const file = bucket.file(`clips/${filename}`);
+      const signedUrls = await file.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2900',
+      })
+      const ezProxyLink = signedUrls[0].replace("https://storage.googleapis.com/ezgg-14fd6.appspot.com/", "/proxy/storage/");
+      res.status(200).send({ data: data.data.data, ezLink: ezProxyLink })
+
+    }
   } catch (err) {
+    console.error(err);
     handleAPIError(err, 'Something went wrong', res);
   }
 

@@ -34,6 +34,10 @@ const nextConfig = {
           destination: 'https://static-cdn.jtvnw.net/:path*'
         },
         {
+          source: '/proxy/storage/:path*',
+          destination: 'https://storage.googleapis.com/ezgg-14fd6.appspot.com/:path*'
+        },
+        {
           source: '/proxy/twitchClip/:path*',
           destination: 'https://production.assets.clips.twitchcdn.net/:path*',
         },
