@@ -1,26 +1,30 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios';
-import { requireGetParam } from '../../../helpers/api/helpers';
+import { handleAPIError, requireGetParam } from '../../../helpers/api/helpers';
+import { getStorage } from 'firebase-admin/storage';
+import { ClipVideoData } from '../../../types/twitchTypes';
+import { initializeFirebase } from '../../../components/server/firebaseAdmin';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  initializeFirebase()
   const twitchURL = requireGetParam('twitchURL', 'Require a valid twitch url', req, res);
-  
+
   const urlArray = twitchURL.split("/")
-  const slug = urlArray[urlArray.length-1];
+  const slug = urlArray[urlArray.length - 1];
 
   //sig=7cf757c46a0872c9d28c548b4db3131f91cd3951&token=%7B%22authorization%22%3A%7B%22forbidden%22%3Afalse%2C%22reason%22%3A%22%22%7D%2C%22clip_uri%22%3A%22https%3A%2F%2Fproduction.assets.clips.twitchcdn.net%2FAT-cm%257C984234660.mp4%22%2C%22device_id%22%3A%22Q0cvNaMIN70sPl2dPkysITsXTiemUqef%22%2C%22expires%22%3A1645555610%2C%22user_id%22%3A%2224030034%22%2C%22version%22%3A2%7D
 
   const data = await axios.post(`https://gql.twitch.tv/gql`, {
-    "operationName":"VideoAccessToken_Clip",
-    "variables":{"slug": slug},
-    "extensions":{
-      "persistedQuery":{
-        "version":1,
-        "sha256Hash":"36b89d2507fce29e5ca551df756d27c1cfe079e2609642b4390aa4c35796eb11"
+    "operationName": "VideoAccessToken_Clip",
+    "variables": { "slug": slug },
+    "extensions": {
+      "persistedQuery": {
+        "version": 1,
+        "sha256Hash": "36b89d2507fce29e5ca551df756d27c1cfe079e2609642b4390aa4c35796eb11"
       }
     }
   }, {
@@ -53,5 +57,51 @@ export default async function handler(
   // })
   // console.log(resp);
 
-  res.status(200).send({data: data.data.data})
+  const bucket = getStorage().bucket();
+
+  try {
+    // Get the direct link
+    const clipData: ClipVideoData = data.data.data.clip;
+    const videoUrl = new URL(clipData.videoQualities[0].sourceURL)
+    const url = new URL(videoUrl);
+    videoUrl.searchParams.append('sig', clipData.playbackAccessToken.signature);
+    videoUrl.searchParams.append('token', clipData.playbackAccessToken.value);
+
+    const filename = url.pathname.replace("/", "");
+
+    console.log(videoUrl.href);
+
+    // Copy this video over to our bucket
+    bucket.file(`clips/${filename}`).exists().then(exists => {
+      if (!exists) {
+        axios.get(videoUrl.href, { responseType: 'blob' }).then(videoData => {
+          bucket.file(`clips/${filename}`).save(videoData.data).then(response => {
+            const file = bucket.file(`clips/${filename}`);
+            file.getSignedUrl({
+              action: 'read',
+              expires: '01-01-2900',
+            }).then(urls => {
+              res.status(200).send({ data: data.data.data, ezLink: urls[0] })
+            })
+          }).catch(err => {
+            console.error("Could not save clip into bucket");
+            handleAPIError(err, 'Something went wrong...', res);
+          })
+        });
+
+      } else {
+        const file = bucket.file(`clips/${filename}`);
+        file.getSignedUrl({
+          action: 'read',
+          expires: '01-01-2900',
+        }).then(urls => {
+          res.status(200).send({ data: data.data.data, ezLink: urls[0] })
+        })
+
+      }
+    });
+  } catch (err) {
+    handleAPIError(err, 'Something went wrong', res);
+  }
+
 }

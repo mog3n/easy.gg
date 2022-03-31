@@ -1,19 +1,12 @@
-import { NextPage } from "next";
-import { CenteredDiv, CenteredHorizontally } from "./Body";
-import { ExportButton, ExportButtonIcon, H1 } from "../../pages/export";
-import { MdSmartphone } from 'react-icons/md';
-import { ConfirmationResult, getAuth, getRedirectResult, GoogleAuthProvider, RecaptchaVerifier, sendSignInLinkToEmail, signInWithPhoneNumber, signInWithPopup, signInWithRedirect } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { isClient } from "../../helpers/helpers";
+import { CenteredHorizontally } from "./Body";
+import { ConfirmationResult, getAuth, signInWithPhoneNumber } from "firebase/auth";
+import { useState } from "react";
 import { Button } from "baseui/button";
 import { PinCode } from 'baseui/pin-code';
-import { Input } from "baseui/input";
 import { COUNTRIES, PhoneInput } from "baseui/phone-input";
 import { toaster } from "baseui/toast";
-import { useRouter } from "next/router";
 import { app } from "../../pages/_app";
-import { useAuth } from "../hooks/useAuth";
-import { ModalBody, ModalButton, ModalFooter, ModalHeader } from "baseui/modal";
+import { ModalBody, ModalFooter, ModalHeader } from "baseui/modal";
 import { useSetRecoilState } from "recoil";
 import { signInModalVisibleState } from "../../state/atoms/ui";
 

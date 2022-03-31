@@ -32,19 +32,11 @@ const ImportPage: NextPage = (props) => {
 
     const memoizedVideoPlayer = useMemo(() => {
         if (clipVideoData.isSuccess) {
-            const clipData = clipVideoData.data.data.data.clip;
-            const videoLink = new URL(clipData.videoQualities[0].sourceURL)
-            videoLink.searchParams.append('sig', clipData.playbackAccessToken.signature);
-            videoLink.searchParams.append('token', clipData.playbackAccessToken.value);
-            return <FullWidthVideoPlayer autoPlay src={twitchClipProxy(videoLink.href)} controls />;
+            return <FullWidthVideoPlayer autoPlay src={clipVideoData.data.data.ezLink} controls />;
         }
     }, [selectedClip, clipVideoData.isSuccess])
 
     if (selectedClip && clipVideoData.isSuccess) {
-        const clipData = clipVideoData.data.data.data.clip;
-        const videoLink = new URL(clipData.videoQualities[0].sourceURL)
-        videoLink.searchParams.append('sig', clipData.playbackAccessToken.signature);
-        videoLink.searchParams.append('token', clipData.playbackAccessToken.value);
 
         return <>
             <Header pageActive="Create" />
@@ -60,7 +52,7 @@ const ImportPage: NextPage = (props) => {
                 <div style={{height: 20}}></div>
                 <Button isLoading={getTwitchClipMutation.isLoading} onClick={async () => {
                     if (!getTwitchClipMutation.isLoading) {
-                        const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: videoLink.href });
+                        const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: clipVideoData.data.data.ezLink });
                         const dataUrl = URL.createObjectURL(clipResp.data);
                         router.push({
                             pathname: '/create',

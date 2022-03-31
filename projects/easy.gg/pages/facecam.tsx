@@ -8,6 +8,7 @@ import styled from "styled-components";
 import ffmpeg from "../components/ffmpeg";
 import { CenteredHorizontally } from "../components/ui/Body";
 import { Header } from "../components/ui/Header";
+import { EditorStep } from "../components/ui/StepsUI";
 import { renderFacecam } from "../ffmpegEffects/facecam";
 import { twitchClipProxy } from "../helpers/helpers";
 import { H1 } from "./export";
@@ -22,10 +23,7 @@ interface MousePos {
     x: number
     y: number
 }
-interface EditorStep {
-    label: string;
-    key: string;
-}
+
 
 const Facecam: NextPage = () => {
     const router = useRouter();
@@ -453,11 +451,11 @@ const CropCornerUI = styled.div`
     z-index: 2;
 `
 
-const StepsContainer = styled.div`
+export const StepsContainer = styled.div`
     display: flex;
     flex-direction: column;
 `
-const SingleStepContainer = styled.div`
+export const SingleStepContainer = styled.div`
     display: flex;
     align-items: center;
     background-color: #414141;
@@ -471,41 +469,41 @@ const SingleStepContainer = styled.div`
         /* background-color: #535353; */
     }
 `
-const SingleStepContainerDeselected = styled(SingleStepContainer)`
+export const SingleStepContainerDeselected = styled(SingleStepContainer)`
     border: 2px solid rgba(0,0,0,0);
 `
-const StepActiveIndicator = styled.div`
+export const StepActiveIndicator = styled.div`
     width: 13px;
     height: 60px;
     border-radius: 7px 0 0 7px;
     background-color: #24FF00;
     margin-right: 10px;
 `
-const StepInactiveIndicator = styled(StepActiveIndicator)`
+export const StepInactiveIndicator = styled(StepActiveIndicator)`
     background-color: #68686800;
 `
-const StepNumberLabel = styled.div`
+export const StepNumberLabel = styled.div`
     font-size: 12px;
     color: #c6c6c6;
 `
-const StepLabel = styled.div`
+export const StepLabel = styled.div`
     font-weight: 600;
     font-size: 18px;
 `
 
-const Container = styled.div`
+export const Container = styled.div`
     display: flex;
     width: 100vw;
     height: 100vh;
 `
 
-const ContainerLeft = styled.div`
+export const ContainerLeft = styled.div`
     flex: 1;
     padding: 20px;
     background-color: #212121;
 `
 
-const ContainerRight = styled.div`
+export const ContainerRight = styled.div`
     padding: 20px;
     flex: 3;
     display: flex;

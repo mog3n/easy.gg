@@ -73,5 +73,6 @@ export interface ClipVideoData {
 export interface ClipVideoDataResponse {
     data: {
         clip: ClipVideoData
-    }
+    },
+    ezLink: string;
 }

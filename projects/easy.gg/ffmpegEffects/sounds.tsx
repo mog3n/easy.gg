@@ -17,11 +17,4 @@ const hospitalFlickSound: SimpleSoundClip = {
     }
 }
 
-const hospitalFlickTemplate = {
-    sound: hospitalFlickSound,
-    videoEffects: {
-
-    }
-}
-
 export const hospitalFlick = SoundEffect(hospitalFlickSound);
