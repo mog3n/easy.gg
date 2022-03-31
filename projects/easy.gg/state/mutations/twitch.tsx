@@ -7,5 +7,5 @@ interface GetTwitchClipMutationRequest {
 }
 export const useGetTwitchClip = () =>
     useMutation((request: GetTwitchClipMutationRequest) => {
-        return axios.get(`${twitchClipProxy(request.videoUrl)}`, { responseType: 'blob' });
+        return axios.get(`${request.videoUrl}`, { responseType: 'blob' });
     });
