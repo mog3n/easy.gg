@@ -10,8 +10,8 @@ export type Steps = { [key:string]: EditorStep }
 
 interface StepsUIProps {
     steps: { [key: string]: EditorStep },
-    stepsDisabled: boolean
-    onStepSelected: (step: EditorStep) => null;
+    stepsDisabled?: boolean
+    onStepSelected: (step: EditorStep) => void;
     onRenderPage: (selectedEditorStep: EditorStep) => JSX.Element;
 }
 

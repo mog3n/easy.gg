@@ -5,7 +5,11 @@ const Edit = () => {
         "editor": { key: '', label: '' }
     }
     return <>
-        <StepsUI steps={}/>
+        <StepsUI
+            steps={editSteps}
+            onRenderPage={() => <></>}
+            onStepSelected={() => {}}
+        />
     </>    
 }
 
