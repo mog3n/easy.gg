@@ -82,9 +82,7 @@ export const StepsUI = (props: StepsUIProps) => {
                 {renderEditorSteps()}
             </ContainerLeft>
             <ContainerRight>
-                <div>
-                    {props.onRenderPage(selectedEditorStep)}
-                </div>
+                {props.onRenderPage(selectedEditorStep)}
             </ContainerRight>
         </Container>
     </>

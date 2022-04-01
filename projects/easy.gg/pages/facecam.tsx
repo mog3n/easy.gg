@@ -498,14 +498,14 @@ export const Container = styled.div`
 `
 
 export const ContainerLeft = styled.div`
-    flex: 1;
+    flex: 1 1 0;
     padding: 20px;
     background-color: #212121;
+    flex-shrink: 0;
 `
 
 export const ContainerRight = styled.div`
-    padding: 20px;
-    flex: 3;
+    flex: 3 3 0;
     display: flex;
     flex-direction: column;
     align-items: center;

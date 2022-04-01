@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { FaCheckSquare, FaClock, FaMusic, FaRegSquare, FaSquare, FaUser } from "react-icons/fa"
 import styled from "styled-components"
-import { hospitalFlickSound, maskOffSound, masterAtWorkSound } from "../../../ffmpegEffects/sounds"
+import { availableSoundClips, hospitalFlickSound, maskOffSound, masterAtWorkSound } from "../../../ffmpegEffects/sounds"
 import { H1 } from "../../../pages/export"
 import { SimpleSoundClip } from "../../../types/editor"
 
@@ -22,12 +22,6 @@ export const SelectAudio = (props: SelectAudioProps) => {
             setSelectedSoundClip(props.preSelectedAudioClip);
         }
     }, [])
-
-    const availableSounds: SimpleSoundClip[] = [
-        masterAtWorkSound,
-        hospitalFlickSound,
-        maskOffSound
-    ]
 
     const renderHoverPreview = () => {
         if (showHoverPreview) {
@@ -72,7 +66,7 @@ export const SelectAudio = (props: SelectAudioProps) => {
 
         <H1>Select Audio Effect</H1>
         <AudioEffectsContainer>
-            {availableSounds.map((sound: SimpleSoundClip, index: number) => {
+            {availableSoundClips.map((sound: SimpleSoundClip, index: number) => {
                 const isSelected = selectedSoundClip && selectedSoundClip.audioURL === sound.audioURL;
                 const isHovering = hoverPreviewClip && hoverPreviewClip.audioURL === sound.audioURL;
 
@@ -130,7 +124,6 @@ const AudioEffectContainer = styled.div`
     padding: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
-    flex: 1;
     min-width: 600px;
     margin-bottom: 10px;
     background-color: #363636;

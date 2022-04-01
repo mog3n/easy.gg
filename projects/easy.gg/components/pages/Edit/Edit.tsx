@@ -6,7 +6,12 @@ import { MarkVideo } from "./MarkVideo";
 import { SelectAudio } from "./SelectAudio";
 
 const Edit = () => {
+    // Audio selector
     const [selectedAudio, setSelectedAudio] = useState<SimpleSoundClip>();
+
+    // Video editor
+    const [videoMarker, setVideoMarker] = useState(0);
+    const [videoTimelinePos, setVideoTimelinePos] = useState(0);
 
     const editSteps: EditorStep[] = [
         { key: 'audioEffect', label: 'Select Audio Effect' },
@@ -15,8 +20,10 @@ const Edit = () => {
         { key: 'preview', label: 'Preview' },
     ]
 
+    console.log(videoMarker, videoTimelinePos);
+
     return <>
-        <Header pageActive="Create"/>
+        <Header pageActive="Create" />
         <StepsUI
             steps={editSteps}
             onRenderPage={(step) => {
@@ -24,7 +31,16 @@ const Edit = () => {
                     case "audioEffect":
                         return <SelectAudio preSelectedAudioClip={selectedAudio} onSoundClipSelected={audio => setSelectedAudio(audio)} />
                     case "markVideo":
-                        return <MarkVideo />
+                        return <MarkVideo
+                            selectedSoundClip={selectedAudio}
+                            timelinePos={videoTimelinePos}
+                            videoMarker={videoMarker}
+
+                            onSetVideoMarker={(timestamp, pos) => {
+                                setVideoMarker(timestamp);
+                                setVideoTimelinePos(pos);
+                            }} />
+
                     case "customizeEffects":
                         return <>customize</>
                     case "preview":

@@ -8,7 +8,7 @@ export const hospitalFlickSound: SimpleSoundClip = {
     creator: 'TikTok God: Robert Wan',
     name: 'Hospital Flick',
     previewMP4: 'http://localhost:3000/landing/hospital.mp4',
-    
+
     default_video_effects: {
         flash: true,
         slow_mo: 2,
@@ -49,6 +49,8 @@ export const maskOffSound: SimpleSoundClip = {
         hue: "180",
     }
 }
+
+export const availableSoundClips: SimpleSoundClip[] = [hospitalFlickSound, masterAtWorkSound, maskOffSound];
 
 
 export const hospitalFlick = SoundEffect(hospitalFlickSound);
