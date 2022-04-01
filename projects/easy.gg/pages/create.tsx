@@ -37,7 +37,7 @@ const Create: NextPage = () => {
                     </Effect>
                     <Effect onClick={() => {
                         router.push({
-                            pathname: '/edit',
+                            pathname: '/stepEditor',
                             query: {
                                 clip: clipUrl,
                                 effect: 'hospitalFlick',

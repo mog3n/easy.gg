@@ -13,8 +13,13 @@ import { ProgressBar } from 'baseui/progress-bar';
 import { convertSecondsToTimestamp } from '../../../helpers/helpers';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { FaPause, FaPlay } from 'react-icons/fa';
+import { SimpleSoundClip } from '../../../types/editor';
 
-const MarkVideo = () => {
+interface MarkVideoProps {
+    selectedSoundClip?: SimpleSoundClip
+}
+
+export const MarkVideo = (props: MarkVideoProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
     const [soundEffect, setSoundEffect] = useState<SoundEffectType>(hospitalFlick);

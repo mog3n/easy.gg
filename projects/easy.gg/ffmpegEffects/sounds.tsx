@@ -1,13 +1,14 @@
 import { SimpleSoundClip } from "../types/editor";
 import { SoundEffect } from "./effects";
 
-const hospitalFlickSound: SimpleSoundClip = {
+export const hospitalFlickSound: SimpleSoundClip = {
     audioURL: '/soundclips/hospital.mp3',
     marker: 4.26,
     duration: 7.497143,
     creator: 'TikTok God: Robert Wan',
     name: 'Hospital Flick',
-
+    previewMP4: 'http://localhost:3000/landing/hospital.mp4',
+    
     default_video_effects: {
         flash: true,
         slow_mo: 2,
@@ -17,7 +18,7 @@ const hospitalFlickSound: SimpleSoundClip = {
     }
 }
 
-const masterAtWorkSound: SimpleSoundClip = { 
+export const masterAtWorkSound: SimpleSoundClip = { 
     audioURL: '/soundclips/masteratwork.mp3',
     marker: 7.24752,
     duration: 14.04,
@@ -33,7 +34,7 @@ const masterAtWorkSound: SimpleSoundClip = {
     }
 }
 
-const maskOffSound: SimpleSoundClip = {
+export const maskOffSound: SimpleSoundClip = {
     audioURL: '/soundclips/maskoff.mp3',
     marker: 4.22812,
     duration: 8.016,

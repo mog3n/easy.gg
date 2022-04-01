@@ -18,6 +18,7 @@ export interface SimpleSoundClip {
     name: string,
     creator: string,
     num_users?: number,
+    previewMP4?: string;
 
     default_video_effects?: VideoEffects
 }

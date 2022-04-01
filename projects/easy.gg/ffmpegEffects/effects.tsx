@@ -8,9 +8,13 @@ export interface SoundEffectType {
     getMinMarkerDuration: () => number;
     getSoundDuration: () => number;
     generateVideo: (ffmpeg: FFmpeg, videoFile: File, videoMarker: number, generatingVideoProgress: Dispatch<SetStateAction<number>>) => Promise<string>;
+    simpleSoundEffect: SimpleSoundClip
 }
 
 export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
+    const getSimpleSoundClip = () => {
+        return soundEffect;
+    }
     const getAudioFile = async () => {
         const sound = await fetch(new Request(soundEffect.audioURL));
         const soundBlob = await sound.blob();
@@ -177,5 +181,5 @@ export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
 
         return url;
     }
-    return { getAudioFile, generateVideo, getVideoProgressLength, getMinMarkerDuration, getSoundDuration }
+    return { getAudioFile, generateVideo, getVideoProgressLength, getMinMarkerDuration, getSoundDuration, simpleSoundEffect: soundEffect }
 }

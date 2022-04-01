@@ -9,15 +9,15 @@ export interface EditorStep {
 export type Steps = { [key:string]: EditorStep }
 
 interface StepsUIProps {
-    steps: { [key: string]: EditorStep },
+    steps: EditorStep[],
     stepsDisabled?: boolean
-    onStepSelected: (step: EditorStep) => void;
+    onStepSelected: (step: EditorStep) => unknown;
     onRenderPage: (selectedEditorStep: EditorStep) => JSX.Element;
 }
 
 
 export const StepsUI = (props: StepsUIProps) => {
-    const [selectedEditorStep, setSelectedEditorStep] = useState<EditorStep>({ label: '', key: 'start' });
+    const [selectedEditorStep, setSelectedEditorStep] = useState<EditorStep>(props.steps[0]);
 
     const renderEditorSteps = () => {
         const onStepSelected = (step: EditorStep) => {
@@ -30,14 +30,11 @@ export const StepsUI = (props: StepsUIProps) => {
 
         return <>
             <StepsContainer>
-                {Object.keys(props.steps).map((editorStepKey: string, index: number) => {
-                    const step = props.steps[editorStepKey];
-
+                {props.steps.map((step: EditorStep, index: number) => {
                     const isPreviousStep = Object.keys(props.steps).findIndex(searchStep => searchStep === selectedEditorStep.key) > index;
-
                     if (selectedEditorStep.key === step.key) {
                         return <>
-                            <SingleStepContainer style={{ justifyContent: 'space-between' }}>
+                            <SingleStepContainer key={step.key} style={{ justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <StepActiveIndicator></StepActiveIndicator>
                                     <div>
@@ -52,7 +49,7 @@ export const StepsUI = (props: StepsUIProps) => {
                     } else if (isPreviousStep) {
                         // render checkmarks
                         return <>
-                            <SingleStepContainerDeselected onClick={() => onStepSelected(step)} style={{ justifyContent: 'space-between' }}>
+                            <SingleStepContainerDeselected key={step.key} onClick={() => onStepSelected(step)} style={{ justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <StepInactiveIndicator />
                                     <div>
@@ -65,7 +62,7 @@ export const StepsUI = (props: StepsUIProps) => {
                         </>
                     } else {
                         return <>
-                            <SingleStepContainerDeselected onClick={() => onStepSelected(step)} style={{}}>
+                            <SingleStepContainerDeselected key={step.key} onClick={() => onStepSelected(step)} style={{}}>
                                 <StepInactiveIndicator></StepInactiveIndicator>
                                 <div>
                                     <StepNumberLabel>Step {index + 1}</StepNumberLabel>
