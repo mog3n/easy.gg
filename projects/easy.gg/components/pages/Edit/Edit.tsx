@@ -33,6 +33,7 @@ const Edit = () => {
                     case "markVideo":
                         return <MarkVideo
                             selectedSoundClip={selectedAudio}
+                            
                             timelinePos={videoTimelinePos}
                             videoMarker={videoMarker}
 
