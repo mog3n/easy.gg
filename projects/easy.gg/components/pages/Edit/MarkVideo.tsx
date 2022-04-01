@@ -112,7 +112,13 @@ export const MarkVideo = (props: MarkVideoProps) => {
                         const calculatedTimelineWidth = 350 / soundEffect.getSoundDuration() * duration;
                         setTimelineWidth(calculatedTimelineWidth);
 
-                        if (props.timelinePos === 0 || !props.timelinePos) {
+                        if (videoRef.current && props.videoMarker) {
+                            videoRef.current.currentTime = props.videoMarker;
+                        }
+
+                        if (props.timelinePos) {
+                            setVideoTimelinePos(props.timelinePos);
+                        } else {
                             setVideoTimelinePos(calculatedTimelineWidth / 2);
                         }
                     }}
