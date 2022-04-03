@@ -1,5 +1,6 @@
 import { fetchFile, FFmpeg } from "@ffmpeg/ffmpeg";
 import { Dispatch, SetStateAction } from "react";
+import ffmpeg from "../components/ffmpeg";
 import { SimpleSoundClip } from "../types/editor";
 
 export interface SoundEffectType {
@@ -30,10 +31,11 @@ export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
         return soundEffect.duration
     }
     const generateVideo = async (
-        ffmpeg: FFmpeg,
+        _: FFmpeg,
         videoFile: File,
         userSelectedVideoDurationPoint: number,
         setGeneratingVideoProgress: Dispatch<SetStateAction<number>>,
+        isPreviewRender = false
     ): Promise<string> => {
         const aFile = await fetchFile(await getAudioFile());
         ffmpeg.FS('writeFile', 'audio', aFile);
@@ -47,13 +49,13 @@ export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
         // Before the inciting point
         setGeneratingVideoProgress(1);
 
-
         await ffmpeg.run(
             '-ss', videoCropLeft.toFixed(2),
             '-t', soundEffect.marker.toString(),
             '-i', 'video',
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
+            isPreviewRender ? '-vf scale=160:-1' :'',
             '-preset', 'ultrafast',
             '-maxrate', '3M',
             '-bufsize', '3M',
