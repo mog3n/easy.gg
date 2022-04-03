@@ -83,21 +83,14 @@ export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
         await ffmpeg.run(
             '-i', 'B.mp4',
             '-filter_complex',
-            // `
-            //   [0:v]setpts=${SLOWMOFACTOR}*PTS[slowchoppy],
-            //   [slowchoppy]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=30'[slow]
-            // `,
             `
                               [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slowInt],
-                              [slowInt]setpts=${SLOWMOFACTOR.toFixed(0)}*PTS[slow]
+                              [slowInt]setpts=${SLOWMOFACTOR.toFixed(0)}*PTS[slowI],
+                              [0:a]asetpts=${SLOWMOFACTOR.toFixed(0)}*PTS[audioI],
+                              [audioI]atempo=(1/${SLOWMOFACTOR.toFixed(0)})[aSlowI]
                             `,
-            // `
-            //   [0:v]minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'[slow]
-            // `,
-            // `
-            //   [0:v]setpts=${SLOWMOFACTOR}*PTS[slow]
-            // `,
-            '-map', '[slow]',
+            '-map', '[slowI]',
+            '-map', '[aSlowI]',
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
             '-preset', 'ultrafast',
@@ -164,7 +157,7 @@ export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
             '-i', 'audio',
 
             '-filter_complex', `
-                                [0:v][0:a][1:v]concat=n=2:v=1:a=1[vcomb][acomb],
+                                [0:v][0:a][1:v]${soundEffect.default_video_effects?.slow_mo === 1 ? `[1:a]` : ``}concat=n=2:v=1:a=1[vcomb][acomb],
                                 [acomb][2:a]amerge=inputs=2[out]`,
             '-map', '[vcomb]',
             '-map', '[out]',

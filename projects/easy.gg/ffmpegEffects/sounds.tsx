@@ -27,7 +27,7 @@ export const masterAtWorkSound: SimpleSoundClip = {
 
     default_video_effects: {
         flash: true,
-        slow_mo: 2,
+        slow_mo: 1,
         shake: true,
         vignette: true,
         hue: "240",
