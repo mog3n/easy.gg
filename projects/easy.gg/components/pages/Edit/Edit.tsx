@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { SimpleSoundClip } from "../../../types/editor";
 import { Header } from "../../ui/Header";
-import { EditorStep, Steps, StepsUI } from "../../ui/StepsUI";
+import { EditorStep, StepsUI } from "../../ui/StepsUI";
 import { MarkVideo } from "./MarkVideo";
+import { EditPreview } from "./Preview";
 import { SelectAudio } from "./SelectAudio";
 
 const Edit = () => {
@@ -16,11 +17,8 @@ const Edit = () => {
     const editSteps: EditorStep[] = [
         { key: 'audioEffect', label: 'Select Audio Effect' },
         { key: 'markVideo', label: 'Mark Video' },
-        { key: 'customizeEffects', label: 'Customize Video Effects' },
         { key: 'preview', label: 'Preview' },
     ]
-
-    console.log(videoMarker, videoTimelinePos);
 
     return <>
         <Header pageActive="Create" />
@@ -45,7 +43,7 @@ const Edit = () => {
                     case "customizeEffects":
                         return <>customize</>
                     case "preview":
-                        return <>preview</>
+                        return <EditPreview audio={selectedAudio} videoMarker={videoMarker} />
                     default:
                         return <></>
                 }

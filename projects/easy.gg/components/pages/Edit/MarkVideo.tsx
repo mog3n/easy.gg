@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SoundEffect, SoundEffectType } from "../../../ffmpegEffects/effects";
 import { hospitalFlick } from "../../../ffmpegEffects/sounds";
-import ffmpeg from "../../ffmpeg";
+import ffmpeg, { checkFfmpeg } from "../../ffmpeg";
 import { Button } from 'baseui/button';
 import { convertSecondsToTimestamp } from '../../../helpers/helpers';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -44,12 +44,7 @@ export const MarkVideo = (props: MarkVideoProps) => {
 
     const router = useRouter();
 
-    // Function to check ffmpeg is lodaded
-    const checkFfmpeg = async () => {
-        if (!ffmpeg.isLoaded()) {
-            ffmpeg.load();
-        }
-    }
+   
 
     // Load video blob into state
     useEffect(() => {
