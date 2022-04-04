@@ -64,7 +64,8 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
             '-preset', 'ultrafast',
             '-maxrate', '3M',
             '-bufsize', '3M',
-            '-filter_complex', `[1:v]chromakey=color=0x000000:similarity=0.2:blend=0[overlaytransparent],
+            '-filter_complex', `
+                                [1:v]lumakey=threshold=${overlayEffect.threshold || 0}:tolerance=${overlayEffect.tolerance || 0.1}:softness=${overlayEffect.softness|| 0.9}[overlaytransparent],
                                 [overlaytransparent]scale=w=360:h=-2[overlayscaled],
                                 [0:v]crop=w=in_h*9/16[croppedvid],
                                 [croppedvid]scale=w=360:h=-2[videoscaled],
@@ -73,6 +74,8 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
             '-map', '1:a',
             'output.mp4'
         );
+
+        // [1:v]chromakey=color=0xFFFFFF:similarity=0.01:blend=0.00[overlaytransparent],
 
         const data = ffmpeg.FS('readFile', 'output.mp4');
         const url = URL.createObjectURL(new Blob([data.buffer]));

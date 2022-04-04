@@ -32,5 +32,9 @@ export interface SimpleOverlayClip {
     num_users?: number,
     previewMP4?: string;
 
+    threshold?: number;
+    tolerance?: number;
+    softness?: number;
+
     default_video_effects?: VideoEffects
 }

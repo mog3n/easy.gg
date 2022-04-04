@@ -45,7 +45,7 @@ const Create: NextPage = () => {
                         })
                     }}>
                         <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
-                        <EffectName>Hospital Flick</EffectName>
+                        <EffectName>Audio Template</EffectName>
                     </Effect>
                     <Effect onClick={() => {
                         router.push({
@@ -57,32 +57,8 @@ const Create: NextPage = () => {
                         })
                     }}>
                         <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
-                        <EffectName>Master at Work</EffectName>
+                        <EffectName>Overlay Template</EffectName>
                     </Effect>
-                    <Effect onClick={() => {
-                        router.push({
-                            pathname: '/edit',
-                            query: {
-                                clip: clipUrl,
-                                effect: 'maskOff'
-                            }
-                        })
-                    }}>
-                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
-                        <EffectName>Mask Off</EffectName>
-                    </Effect>
-                    <Effect onClick={() => {
-                        router.push({
-                            pathname: '/edit',
-                            query: {
-                                clip: clipUrl
-                            }
-                        })
-                    }}>
-                        <EffectPreview src="/effectPreviews/hospital_flick.png"></EffectPreview>
-                        <EffectName>Stay with Me</EffectName>
-                    </Effect>
-
                 </EffectsContainer>
             </ContentSelectContainer>
         </ColumnsContainer>
