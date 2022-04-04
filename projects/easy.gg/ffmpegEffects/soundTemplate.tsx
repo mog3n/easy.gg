@@ -162,10 +162,25 @@ export const SoundEffect = (soundEffect: SimpleSoundClip): SoundEffectType => {
         //   'B-slow-edited.mp4'
         // );
 
+        await ffmpeg.run(
+            '-f', 'lavfi',
+            '-i', 'color=s=1920x1080',
+            '-i', 'B-slow-edited.mp4',
+            '-filter_complex', `
+                [1][2]scale2ref,
+                overlay=y='if(lt(mod(t,1), 0.5), 
+                random(1)*100+random(1)*(-100))'
+                `, 
+            '-preset', 'ultrafast',
+            '-maxrate', '3M',
+            '-bufsize', '3M',
+            'B-slow-edited2.mp4'
+        );
+
         setGeneratingVideoProgress(5);
         await ffmpeg.run(
             '-i', 'A.mp4',
-            '-i', 'B-slow-edited.mp4',
+            '-i', 'B-slow-edited2.mp4',
             '-i', 'audio',
 
             '-filter_complex', `
