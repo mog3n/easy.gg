@@ -10,7 +10,7 @@ import { FaPause, FaPlay } from 'react-icons/fa';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import ffmpeg from '../components/ffmpeg';
 import { Header } from '../components/ui/Header';
-import { SoundEffectType } from '../ffmpegEffects/effects';
+import { SoundEffectType } from '../ffmpegEffects/soundTemplate';
 import { hospitalFlick, masterAtWork, maskOff } from '../ffmpegEffects/sounds';
 import { convertSecondsToTimestamp } from '../helpers/helpers';
 

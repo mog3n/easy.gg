@@ -1,5 +1,5 @@
 import { SimpleSoundClip } from "../types/editor";
-import { SoundEffect } from "./effects";
+import { SoundEffect } from "./soundTemplate";
 
 export const hospitalFlickSound: SimpleSoundClip = {
     audioURL: '/soundclips/hospital.mp3',
