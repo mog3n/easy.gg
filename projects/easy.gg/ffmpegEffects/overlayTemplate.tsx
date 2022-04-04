@@ -55,6 +55,8 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
         const videoCropLeft = userSelectedVideoDurationPoint - overlayEffect.marker;
 
         await ffmpeg.run(
+            '-ss', videoCropLeft.toFixed(2),
+            '-t', overlayEffect.duration.toFixed(2),
             '-i', 'video',
             '-i', 'overlay',
             '-c:v', 'libx264',
@@ -63,10 +65,11 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
             '-maxrate', '3M',
             '-bufsize', '3M',
             '-filter_complex', `[1:v]chromakey=color=0x000000:similarity=0.2:blend=0[overlaytransparent],
-                                [overlaytransparent]scale=w=1080:h=-2[overlayscaled],
+                                [overlaytransparent]scale=w=360:h=-2[overlayscaled],
                                 [0:v]crop=w=in_h*9/16[croppedvid],
-                                [croppedvid]scale=w=1080:h=-2[videoscaled],
-                                [videoscaled][overlayscaled]overlay[overlayed]`,
+                                [croppedvid]scale=w=360:h=-2[videoscaled],
+                                [videoscaled][overlayscaled]overlay[overlayed]
+                                `,
             '-map', '[overlayed]',
             '-map', '1:a',
             'output.mp4'
