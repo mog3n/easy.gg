@@ -7,7 +7,7 @@ export const hospitalFlickSound: SimpleSoundClip = {
     duration: 7.497143,
     creator: 'TikTok God: Robert Wan',
     name: 'Hospital Flick',
-    previewMP4: 'http://localhost:3000/landing/hospital.mp4',
+    previewMP4: '/audioPreviews/hospital.mp4',
 
     default_video_effects: {
         flash: true,
@@ -24,6 +24,7 @@ export const masterAtWorkSound: SimpleSoundClip = {
     duration: 14.04,
     creator: 'TikTok God: Robert Wan',
     name: 'Master At Work',
+    previewMP4: '/audioPreviews/previewMasterAtWork.mp4',
 
     default_video_effects: {
         flash: true,
