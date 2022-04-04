@@ -1,9 +1,9 @@
 import axios from "axios";
 import { Router, useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { SoundEffect } from "../../../ffmpegEffects/effects";
+import { SoundEffect } from "../../../ffmpegEffects/soundTemplate";
 import { SimpleSoundClip } from "../../../types/editor"
-import ffmpeg, { checkFfmpeg, exitFfmpeg } from "../../ffmpeg";
+import ffmpeg, { checkFfmpeg } from "../../ffmpeg";
 
 interface PreviewProps {
     audio: SimpleSoundClip | undefined;
@@ -34,7 +34,7 @@ export const EditPreview = (props: PreviewProps) => {
                     await checkFfmpeg();
                     setIsRendering(true);
                     setTimeout(async () => {
-                        const preview = await audioEffect.generateVideo(ffmpeg, vFile, props.videoMarker, setFfmpegProgress);
+                        const preview = await audioEffect.generatePreview(ffmpeg, vFile, props.videoMarker, setFfmpegProgress);
                         setPreviewBlobUrl(preview);
                         setIsRendering(false);
                     })
@@ -47,10 +47,6 @@ export const EditPreview = (props: PreviewProps) => {
             console.log(progress);
             setFfmpegProgress(progress.ratio);
         })
-
-        return () => {
-            exitFfmpeg();
-        }
 
     }, [])
 

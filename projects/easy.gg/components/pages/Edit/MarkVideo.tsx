@@ -3,7 +3,7 @@ import React from 'react';
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SoundEffect, SoundEffectType } from "../../../ffmpegEffects/effects";
+import { SoundEffect, SoundEffectType } from "../../../ffmpegEffects/soundTemplate";
 import { hospitalFlick } from "../../../ffmpegEffects/sounds";
 import ffmpeg, { checkFfmpeg } from "../../ffmpeg";
 import { Button } from 'baseui/button';

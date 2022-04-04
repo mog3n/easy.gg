@@ -22,3 +22,15 @@ export interface SimpleSoundClip {
 
     default_video_effects?: VideoEffects
 }
+
+export interface SimpleOverlayClip {
+    overlayURL: string;
+    marker: number,
+    duration: number,
+    name: string,
+    creator: string,
+    num_users?: number,
+    previewMP4?: string;
+
+    default_video_effects?: VideoEffects
+}
