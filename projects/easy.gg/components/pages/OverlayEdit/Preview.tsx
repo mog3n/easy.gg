@@ -25,7 +25,7 @@ export const OverlayEditPreview = (props: PreviewProps) => {
 
         const asyncEffect = async () => {
             const overlayEffect = props.overlay ? OverlayEffect(props.overlay) : null;
-            
+
             // check router for params
             if (router.query.clip) {
                 const blobUrl = router.query.clip as string;
@@ -55,6 +55,6 @@ export const OverlayEditPreview = (props: PreviewProps) => {
 
     return <>
         {isRendering ? <>Rendering Preview... {(ffmpegProgress * 100).toFixed(0)}%</> : <></>}
-        {previewBlobUrl ? <video src={previewBlobUrl} autoPlay style={{ width: '100%' }} loop /> : <></>}
+        {previewBlobUrl ? <video src={previewBlobUrl} autoPlay style={{ height: '100%' }} loop /> : <></>}
     </>
 }

@@ -63,7 +63,10 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
             '-maxrate', '3M',
             '-bufsize', '3M',
             '-filter_complex', `[1:v]chromakey=color=0x000000:similarity=0.2:blend=0[overlaytransparent],
-                                [0:v][overlaytransparent]overlay[overlayed]`,
+                                [overlaytransparent]scale=w=1080:h=-2[overlayscaled],
+                                [0:v]crop=w=in_h*9/16[croppedvid],
+                                [croppedvid]scale=w=1080:h=-2[videoscaled],
+                                [videoscaled][overlayscaled]overlay[overlayed]`,
             '-map', '[overlayed]',
             '-map', '1:a',
             'output.mp4'
