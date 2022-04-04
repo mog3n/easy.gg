@@ -55,6 +55,8 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
         const videoCropLeft = userSelectedVideoDurationPoint - overlayEffect.marker;
 
         await ffmpeg.run(
+            '-ss', videoCropLeft.toFixed(2),
+            '-t', overlayEffect.duration.toFixed(2),
             '-i', 'video',
             '-i', 'overlay',
             '-c:v', 'libx264',
