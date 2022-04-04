@@ -12,7 +12,6 @@ interface PreviewProps {
 }
 
 export const OverlayEditPreview = (props: PreviewProps) => {
-    const audioEffect = props.overlay ? OverlayEffect(props.overlay) : null;
 
     const router = useRouter();
     const [videoFile, setVideoFile] = useState<File>();
@@ -25,17 +24,19 @@ export const OverlayEditPreview = (props: PreviewProps) => {
         checkFfmpeg();
 
         const asyncEffect = async () => {
+            const overlayEffect = props.overlay ? OverlayEffect(props.overlay) : null;
+            
             // check router for params
             if (router.query.clip) {
                 const blobUrl = router.query.clip as string;
                 const blob = await axios.get(blobUrl, { responseType: 'blob' })
                 const vFile = new File([blob.data], 'videoFile');
                 setVideoFile(vFile);
-                if (audioEffect && vFile) {
+                if (overlayEffect && vFile) {
                     await checkFfmpeg();
                     setIsRendering(true);
                     setTimeout(async () => {
-                        const preview = await audioEffect.generatePreview(ffmpeg, vFile, props.videoMarker, setFfmpegProgress);
+                        const preview = await overlayEffect.generateVideo(ffmpeg, vFile, props.videoMarker, setFfmpegProgress);
                         setPreviewBlobUrl(preview);
                         setIsRendering(false);
                     })

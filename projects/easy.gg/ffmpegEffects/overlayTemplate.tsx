@@ -43,7 +43,6 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
         videoFile: File,
         userSelectedVideoDurationPoint: number,
         setGeneratingVideoProgress: Dispatch<SetStateAction<number>>,
-        isPreviewRender = false
     ): Promise<string> => {
         const aFile = await fetchFile(await getOverlayFile());
         ffmpeg.FS('writeFile', 'overlay', aFile);
@@ -57,11 +56,16 @@ export const OverlayEffect = (overlayEffect: SimpleOverlayClip): OverlayEffectTy
 
         await ffmpeg.run(
             '-i', 'video',
+            '-i', 'overlay',
             '-c:v', 'libx264',
             '-r', FRAMERATE.toString(),
             '-preset', 'ultrafast',
             '-maxrate', '3M',
             '-bufsize', '3M',
+            '-filter_complex', `[1:v]chromakey=color=0x000000:similarity=0.2:blend=0[overlaytransparent],
+                                [0:v][overlaytransparent]overlay[overlayed]`,
+            '-map', '[overlayed]',
+            '-map', '1:a',
             'output.mp4'
         );
 

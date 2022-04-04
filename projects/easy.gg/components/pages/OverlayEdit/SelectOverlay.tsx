@@ -65,7 +65,7 @@ export const SelectOverlay = (props: SelectAudioProps) => {
     return <>
         {renderHoverPreview()}
 
-        <H1>Select Audio Effect</H1>
+        <H1>Select Overlay</H1>
         <AudioEffectsContainer>
             {availableOverlays.map((overlay: SimpleOverlayClip, index: number) => {
                 const isSelected = selectedSoundClip && selectedSoundClip.overlayURL === overlay.overlayURL;
