@@ -1,4 +1,5 @@
 import { Modal, ModalBody, ModalHeader } from "baseui/modal";
+import Image from "next/image";
 import { useRouter } from "next/router"
 import { FaSearch, FaUpload } from "react-icons/fa"
 import styled from "styled-components";
@@ -41,9 +42,9 @@ export const SelectVideoSourceModal = (props: ModalProps) => {
                         useTemplate: true
                     }
                 })}>
-                    <FaSearch size={68} />
+                    <Image src="/assets/icons/twitch.png" alt="Twitch" width={68} height={67}/>
                     <OptionLabel>
-                        Search Twitch
+                        Twitch
                     </OptionLabel>
                 </Option>
             </OptionsContainer>

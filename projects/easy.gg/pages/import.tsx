@@ -139,12 +139,13 @@ const ImportPage: NextPage = (props) => {
                     placeholder="Search for creator or paste clip URL"
                     value={creatorSearchQuery}
                     onChange={(evt) => {
-                        if (evt.currentTarget.value.includes("https://")) {
+                        const text = evt.currentTarget.value;
+                        if (text.includes("https://") && text.includes("/clip/")) {
                             // probably a link
                             setSelectedClip({
                                 broadcaster_id: '',
                                 broadcaster_name: '',
-                                url: evt.currentTarget.value,
+                                url: text,
                                 created_at: '',
                                 creator_id: '',
                                 creator_name: '',
@@ -159,7 +160,7 @@ const ImportPage: NextPage = (props) => {
                                 view_count: 0
                             })
                         } else {
-                            setCreatorSearchQuery(evt.currentTarget.value)
+                            setCreatorSearchQuery(text)
                         }
                     }}
                 />
