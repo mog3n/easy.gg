@@ -29,6 +29,7 @@ const HeaderItems = styled.div`
 `
 
 const HeaderLogo = styled.img`
+    cursor: pointer;
     width: 43px;
     margin: 10px;
     @media (max-width: 600px) {
@@ -128,7 +129,7 @@ export const Header = (props: HeaderProps) => {
                 overrides={{
                     AppName: {
                         component: () => <Link href="/" passHref><HeaderLogo src="/logo.svg" alt="Logo" /></Link>
-                    }
+                    },
                 }}
             />
         </>
@@ -169,7 +170,7 @@ export const Header = (props: HeaderProps) => {
             }}
             overrides={{
                 AppName: {
-                    component: () => <HeaderLogo src="/logo.svg" alt="Logo" />
+                    component: () => <HeaderLogo src="/logo.svg" alt="Logo" onClick={() => router.push('/')} />
                 }
             }}
         />

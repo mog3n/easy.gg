@@ -8,6 +8,7 @@ import { Header } from "../components/ui/Header";
 import { SelectVideoSourceModal } from "../components/ui/SelectVideoSourceModal";
 import { selectedTemplateState } from "../state/atoms/ui";
 import { MakeTemplate } from "../types/ui";
+import { Grid, Cell, BEHAVIOR } from 'baseui/layout-grid'
 
 const templates: MakeTemplate[] = [
     {
@@ -24,14 +25,14 @@ const templates: MakeTemplate[] = [
     // },
     {
         name: 'Hospital Flick',
-        description: `What's your reaction time?`,
+        description: `Why's it called a hospital flick?`,
         preview_img: '',
         redirect: '/stepEditor',
         preview_mp4: '/audioPreviews/hospital.mp4'
     },
     {
         name: 'Master at Work',
-        description: `Show off your skills.`,
+        description: `You are watching a...`,
         preview_img: '',
         redirect: '/stepEditor',
         preview_mp4: '/audioPreviews/previewMasterAtWork.mp4'
@@ -42,6 +43,13 @@ const templates: MakeTemplate[] = [
         preview_img: '',
         redirect: '/overlayEditor',
         preview_mp4: '/overlays/a.mp4'
+    },
+    {
+        name: `Stay with Me`,
+        description: `Na nee...`,
+        preview_img: '',
+        redirect: '/overlayEditor',
+        preview_mp4: '/overlays/staywithmeoverlay2.mp4'
     },
     {
         name: `I'm Obsessed`,
@@ -60,7 +68,7 @@ const Index: NextPage = () => {
     const renderTemplates = () => {
 
         return templates.map(template => {
-            return <TemplateContainer key={template.preview_img} onClick={() => {
+            return <TemplateContainer key={template.preview_img || template.preview_mp4} onClick={() => {
                 setSelectedTemplate(template);
                 setIsVideoSourceOpen(true);
             }}>
@@ -68,7 +76,7 @@ const Index: NextPage = () => {
                     <video
                         src={template.preview_mp4}
                         style={{
-                            width: 200,
+                            width: 180,
                             height: 350,
                             backgroundColor: 'rgba(255,255,255,0.12)',
                             objectFit: 'cover',
@@ -88,7 +96,7 @@ const Index: NextPage = () => {
                         loop
                     ></video>
                 </> : <>
-                    <Image src={template.preview_img} alt="" width={200} height={350} objectFit="cover" />
+                    <Image src={template.preview_img} alt="" width={180} height={350} objectFit="cover" />
                 </>}
                 <TemplateTitle>{template.name}</TemplateTitle>
                 <TemplateDescription>{template.description}</TemplateDescription>
@@ -102,49 +110,63 @@ const Index: NextPage = () => {
             isOpen={isVideoSourceOpen}
             onCloseModal={() => setIsVideoSourceOpen(false)}
         />
-        <HeaderBannerContainer>
-            <BannerHero>Play, create, grow.</BannerHero>
-            <BannerSubtitle>Make exciting gaming clips</BannerSubtitle>
-        </HeaderBannerContainer>
-        <ContainerRow>
-            <EffectIcon>
-                <Image src="/icons/facecam.svg" alt="Facecam" width={80} height={80} />
-                <EffectTitle>Facecam</EffectTitle>
-            </EffectIcon>
-            <EffectIcon>
-                <Image src="/icons/text.svg" alt="Text" width={80} height={80} />
-                <EffectTitle>Text Overlays</EffectTitle>
-            </EffectIcon>
-            <EffectIcon>
-                <Image src="/icons/templates.svg" alt="Templates" width={80} height={80} />
-                <EffectTitle>Templates</EffectTitle>
-            </EffectIcon>
-        </ContainerRow>
-        <Container>
-            <ContainerTitle>Make</ContainerTitle>
-            <ContainerRow style={{ margin: 0, marginTop: 10 }}>
-                {/* <Image src="/icons/hover-icon.svg" alt="hover" width={30} height={30} />
+        <Grid>
+            <HeaderBannerContainer>
+                <BannerHero>Play, create, grow.</BannerHero>
+                <BannerSubtitle>Make exciting gaming clips</BannerSubtitle>
+            </HeaderBannerContainer>
+        </Grid>
+        <Grid>
+            <ContainerRow>
+                <EffectIcon>
+                    <Image src="/icons/facecam.svg" alt="Facecam" width={80} height={80} />
+                    <EffectTitle>Facecam</EffectTitle>
+                </EffectIcon>
+                <EffectIcon>
+                    <Image src="/icons/text.svg" alt="Text" width={80} height={80} />
+                    <EffectTitle>Text Overlays</EffectTitle>
+                </EffectIcon>
+                <EffectIcon>
+                    <Image src="/icons/templates.svg" alt="Templates" width={80} height={80} />
+                    <EffectTitle>Templates</EffectTitle>
+                </EffectIcon>
+            </ContainerRow>
+        </Grid>
+        <Grid>
+            <Container>
+                <ContainerTitle>Make</ContainerTitle>
+                <ContainerRow style={{ margin: 0, marginTop: 10 }}>
+                    {/* <Image src="/icons/hover-icon.svg" alt="hover" width={30} height={30} />
                 <div style={{ width: 10 }}></div>
                 <ContainerSubtitle>Hover mouse to preview effect</ContainerSubtitle> */}
-            </ContainerRow>
-        </Container>
-        <ContainerRow style={{ marginTop: -20 }}>
-            <div style={{ cursor: 'pointer', }}>
-                {muted ? <div onClick={() => setMuted(false)} style={{ display: 'flex', alignItems: 'center' }}>
-                    <FaVolumeMute size={22} color="#fff" style={{ marginRight: 10 }} />
-                    <ContainerSubtitle>Muted</ContainerSubtitle>
+                </ContainerRow>
+            </Container>
+        </Grid>
+        <Grid>
+            <ContainerRow style={{ marginTop: -20 }}>
+                <div style={{ cursor: 'pointer', padding: 10, border: '2px solid #fff' }} onClick={() => {
+                    setMuted(!muted);
+                }}>
+                    {muted ? <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <FaVolumeMute size={22} color="#fff" style={{ marginRight: 10 }} />
+                        <ContainerSubtitle>Muted</ContainerSubtitle>
+                    </div>
+                        :
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <FaVolumeUp size={22} color="#fff" />
+                        </div>}
                 </div>
-                    :
-                    <div onClick={() => setMuted(true)} style={{ display: 'flex', alignItems: 'center' }}>
-                        <FaVolumeUp size={22} color="#fff" style={{ marginRight: 10 }} />
-                        <ContainerSubtitle>Mute</ContainerSubtitle>
-                    </div>}
-            </div>
-        </ContainerRow>
-        <ContainerRow>
-            {renderTemplates()}
-        </ContainerRow>
-        <div style={{ height: '15vh' }} />
+            </ContainerRow>
+        </Grid>
+        <Grid>
+            <ContainerRow style={{justifyContent: 'space-evenly'}}>
+                {renderTemplates()}
+            </ContainerRow>
+        </Grid>
+        <Grid>
+            <div style={{ height: '15vh' }} />
+        </Grid>
+
     </>
 }
 
@@ -163,7 +185,8 @@ const hueAnimation = keyframes`
 const HeaderBannerContainer = styled.div`
     background: linear-gradient(93.9deg, #4B00EC 21.87%, #B10066 61.05%, #FF0000 91.53%);
     border-radius: 8px;
-    margin: 30px;
+    margin: 20px;
+    width: 100%;
     padding: 35px;
     display: flex;
     flex-direction: column;
@@ -192,10 +215,10 @@ line-height: 23px;
 color: #FFFFFF;
 `
 export const Container = styled.div`
-    margin: 30px;
+    margin: 20px;
 `
 export const ContainerRow = styled.div`
-    margin: 30px;
+    margin: 20px;
     display: flex;
     flex-wrap: wrap;
 `
@@ -234,6 +257,7 @@ color: #FFFFFF;
 export const TemplateContainer = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     margin-right: 10px;
     cursor: pointer;
     border: 2px solid rgba(0,0,0,0);
@@ -248,12 +272,13 @@ export const TemplateTitle = styled.div`
 font-weight: 700;
 margin-top: 5px;
 font-size: 18px;
+width: 180px;
 `
 export const TemplateDescription = styled.div`
 font-family: Roboto;
 font-style: italic;
 font-size: 13px;
 opacity: 0.6;
-width: 200px;
+    width: 180px;
 `
 

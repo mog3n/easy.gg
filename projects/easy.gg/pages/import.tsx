@@ -16,6 +16,7 @@ import { useGetClipMP4Data, useGetTwitchClipsFromBroadcasterID, useSearchTwitchC
 import { TwitchClip, TwitchCreator } from "../types/twitchTypes";
 import { MakeTemplate } from "../types/ui";
 import { H1 } from "./export";
+import { Cell, Grid } from 'baseui/layout-grid';
 
 const ImportPage: NextPage = (props) => {
     const router = useRouter();
@@ -115,25 +116,23 @@ const ImportPage: NextPage = (props) => {
 
     return <>
         <Header pageActive="Create" />
-        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginLeft: 20, marginRight: 20 }}>
-            <H1 style={{ fontSize: 32, margin: 0 }}>Search Twitch Creator</H1>
-            <Input
-                endEnhancer={<FaSearch size={16} />}
-                autoFocus
-                placeholder="Search for a creator"
-                value={creatorSearchQuery}
-                onChange={(evt) => setCreatorSearchQuery(evt.currentTarget.value)}
-                overrides={{
-                    Root: {
-                        style: {
-                            width: '350px'
-                        }
-                    },
-                }}
-            />
-        </div>
+        <div style={{height: 20}}></div>
+        <Grid>
+            <Cell span={[1, 4, 5]}><H1 style={{ fontSize: 32, margin: 0 }}>Search Twitch Creator</H1></Cell>
+            <Cell skip={[0, 0, 2]} span={[0, 4, 4]}>
+                <Input
+                    endEnhancer={<FaSearch size={16} />}
+                    autoFocus
+                    placeholder="TenZ, pokimane, shroud..."
+                    value={creatorSearchQuery}
+                    onChange={(evt) => setCreatorSearchQuery(evt.currentTarget.value)}
+                />
+            </Cell>
+
+        </Grid>
 
         {searchQuery.data ? <UserSearchResults>
+            <Grid>
             {searchQuery.data.data.data.map(creator => {
                 return <UserSearchResultContainer key={creator.id} onClick={() => {
                     setSelectedCreator(creator);
@@ -142,6 +141,7 @@ const ImportPage: NextPage = (props) => {
                     <UserSearchResultName>{creator.display_name}</UserSearchResultName>
                 </UserSearchResultContainer>
             })}
+            </Grid>
         </UserSearchResults> : <></>}
     </>
 }

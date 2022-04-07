@@ -20,7 +20,7 @@ export const SelectVideoSourceModal = (props: ModalProps) => {
         animate
         autoFocus
     >
-        <ModalHeader>Choose video source</ModalHeader>
+        <ModalHeader>Choose a clip</ModalHeader>
         <ModalBody>
             <OptionsContainer>
                 <Option onClick={() => router.push({
@@ -31,7 +31,7 @@ export const SelectVideoSourceModal = (props: ModalProps) => {
                 })}>
                     <FaUpload size={88} />
                     <OptionLabel>
-                        Upload a clip
+                        Upload clip
                     </OptionLabel>
                 </Option>
 
