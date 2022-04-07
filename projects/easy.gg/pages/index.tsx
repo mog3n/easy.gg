@@ -9,20 +9,22 @@ import { SelectVideoSourceModal } from "../components/ui/SelectVideoSourceModal"
 import { selectedTemplateState } from "../state/atoms/ui";
 import { MakeTemplate } from "../types/ui";
 import { Grid, Cell, BEHAVIOR } from 'baseui/layout-grid'
+import { toaster } from "baseui/toast";
 
 const templates: MakeTemplate[] = [
     {
         name: 'Facecam',
-        description: `Split the top half of the screen with the streamer's face.`,
+        description: `Split the top half of the screen with streamer`,
         preview_img: '/assets/previews/facecam.png',
         redirect: '/facecam',
     },
-    // {
-    //     name: 'Text Overlay',
-    //     description: `Text captions on top of gameplay.`,
-    //     preview_img: '/assets/previews/text.png',
-    //     redirect: '/stepEditor',
-    // },
+    {
+        name: 'Coming Soon',
+        description: `Text Overlay - Text on top of gameplay`,
+        preview_img: '/assets/previews/text.png',
+        redirect: '/stepEditor',
+        coming_soon: true,
+    },
     {
         name: 'Hospital Flick',
         description: `Why's it called a hospital flick?`,
@@ -69,8 +71,17 @@ const Index: NextPage = () => {
 
         return templates.map(template => {
             return <TemplateContainer key={template.preview_img || template.preview_mp4} onClick={() => {
-                setSelectedTemplate(template);
-                setIsVideoSourceOpen(true);
+                if (template.coming_soon) {
+                    toaster.info(<>
+                        This effect is coming soon!
+                    </>, {
+                        autoHideDuration: 5000
+                    });
+                } else {
+                    setSelectedTemplate(template);
+                    setIsVideoSourceOpen(true);
+                }
+                
             }}>
                 {template.preview_mp4 ? <>
                     <video
@@ -136,14 +147,14 @@ const Index: NextPage = () => {
             <Container>
                 <ContainerTitle>Make</ContainerTitle>
                 <ContainerRow style={{ margin: 0, marginTop: 10 }}>
-                    {/* <Image src="/icons/hover-icon.svg" alt="hover" width={30} height={30} />
+                    <Image src="/icons/hover-icon.svg" alt="hover" width={30} height={30} />
                 <div style={{ width: 10 }}></div>
-                <ContainerSubtitle>Hover mouse to preview effect</ContainerSubtitle> */}
+                <ContainerSubtitle>Hover mouse to preview effect. Choose a template to get started!</ContainerSubtitle>
                 </ContainerRow>
             </Container>
         </Grid>
         <Grid>
-            <ContainerRow style={{ marginTop: -20 }}>
+            <ContainerRow style={{ marginTop: 0 }}>
                 <div style={{ cursor: 'pointer', padding: 10, border: '2px solid #fff' }} onClick={() => {
                     setMuted(!muted);
                 }}>
@@ -159,7 +170,7 @@ const Index: NextPage = () => {
             </ContainerRow>
         </Grid>
         <Grid>
-            <ContainerRow style={{justifyContent: 'space-evenly'}}>
+            <ContainerRow>
                 {renderTemplates()}
             </ContainerRow>
         </Grid>
