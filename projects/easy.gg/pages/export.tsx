@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { HeroText1 } from ".";
+import { HeroText1 } from "./about";
 import { useAuth } from "../components/hooks/useAuth";
 import { Header } from "../components/ui/Header";
 import { IoMdLogIn } from 'react-icons/io'

@@ -46,7 +46,7 @@ export const SignIn = () => {
         const code = values.join("");
         confirmationResult?.confirm(code)
             .then(result => {
-                toaster.positive(<>Welcome back!</>, { autoHideDuration: 6000 });
+                toaster.positive(<>Welcome to EZ.GG!</>, { autoHideDuration: 6000 });
                 setSignInModalVisible(false);
             })
             .catch(err => {
