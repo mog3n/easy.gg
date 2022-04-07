@@ -1,49 +1,94 @@
 import { NextPage } from "next";
 import Image from "next/image";
+import { useState } from "react";
+import { FaVolumeMute, FaVolumeOff, FaVolumeUp } from "react-icons/fa";
+import { useRecoilState } from "recoil";
 import styled, { keyframes } from "styled-components";
 import { Header } from "../components/ui/Header";
+import { SelectVideoSourceModal } from "../components/ui/SelectVideoSourceModal";
+import { selectedTemplateState } from "../state/atoms/ui";
 import { MakeTemplate } from "../types/ui";
 
+const templates: MakeTemplate[] = [
+    {
+        name: 'Facecam',
+        description: `Split the top half of the screen with the streamer's face.`,
+        preview_img: '/assets/previews/facecam.png',
+        redirect: '/facecam',
+    },
+    // {
+    //     name: 'Text Overlay',
+    //     description: `Text captions on top of gameplay.`,
+    //     preview_img: '/assets/previews/text.png',
+    //     redirect: '/stepEditor',
+    // },
+    {
+        name: 'Hospital Flick',
+        description: `What's your reaction time?`,
+        preview_img: '',
+        redirect: '/stepEditor',
+        preview_mp4: '/audioPreviews/hospital.mp4'
+    },
+    {
+        name: 'Master at Work',
+        description: `Show off your skills.`,
+        preview_img: '',
+        redirect: '/stepEditor',
+        preview_mp4: '/audioPreviews/previewMasterAtWork.mp4'
+    },
+    {
+        name: 'Deja Vu - Olivia Rodrigo',
+        description: `Do you get deja vu?`,
+        preview_img: '',
+        redirect: '/overlayEditor',
+        preview_mp4: '/overlays/a.mp4'
+    },
+    {
+        name: `I'm Obsessed`,
+        description: `No, I don't think you understand...`,
+        preview_img: '',
+        redirect: '/overlayEditor',
+        preview_mp4: '/overlays/idk.mp4'
+    },
+]
+
 const Index: NextPage = () => {
+    const [muted, setMuted] = useState(true);
+    const [isVideoSourceOpen, setIsVideoSourceOpen] = useState(false);
+    const [selectedTemplate, setSelectedTemplate] = useRecoilState(selectedTemplateState);
 
     const renderTemplates = () => {
-        const templates: MakeTemplate[] = [
-            {
-                name: 'Hospital Flick',
-                description: `What's your reaction time?`,
-                preview_img: '',
-                redirect: '',
-                preview_mp4: '/audioPreviews/hospital.mp4'
-            },
-            {
-                name: 'Master at Work',
-                description: `Show off your skills.`,
-                preview_img: '',
-                redirect: '',
-                preview_mp4: '/audioPreviews/previewMasterAtWork.mp4'
-            }
-        ]
+
         return templates.map(template => {
-            return <TemplateContainer key={template.preview_img}>
+            return <TemplateContainer key={template.preview_img} onClick={() => {
+                setSelectedTemplate(template);
+                setIsVideoSourceOpen(true);
+            }}>
                 {template.preview_mp4 ? <>
                     <video
                         src={template.preview_mp4}
                         style={{
-                            width: 250,
-                            height: 450,
+                            width: 200,
+                            height: 350,
                             backgroundColor: 'rgba(255,255,255,0.12)',
                             objectFit: 'cover',
                         }}
                         onMouseOver={(evt) => {
+                            if (!muted) {
+                                evt.currentTarget.muted = false;
+                            }
                             evt.currentTarget.play();
                             evt.currentTarget.currentTime = 0;
                         }}
                         onMouseLeave={(evt) => {
-                            evt.currentTarget.pause();
+                            evt.currentTarget.muted = true;
                         }}
-                    />
+                        autoPlay
+                        muted
+                        loop
+                    ></video>
                 </> : <>
-                    <Image src="/assets/previews/text.png" alt="" width={250} height={450} objectFit="cover" />
+                    <Image src={template.preview_img} alt="" width={200} height={350} objectFit="cover" />
                 </>}
                 <TemplateTitle>{template.name}</TemplateTitle>
                 <TemplateDescription>{template.description}</TemplateDescription>
@@ -53,6 +98,10 @@ const Index: NextPage = () => {
 
     return <>
         <Header pageActive="Home" />
+        <SelectVideoSourceModal
+            isOpen={isVideoSourceOpen}
+            onCloseModal={() => setIsVideoSourceOpen(false)}
+        />
         <HeaderBannerContainer>
             <BannerHero>Play, create, grow.</BannerHero>
             <BannerSubtitle>Make exciting gaming clips</BannerSubtitle>
@@ -74,25 +123,28 @@ const Index: NextPage = () => {
         <Container>
             <ContainerTitle>Make</ContainerTitle>
             <ContainerRow style={{ margin: 0, marginTop: 10 }}>
-                <Image src="/icons/hover-icon.svg" alt="hover" width={30} height={30} />
+                {/* <Image src="/icons/hover-icon.svg" alt="hover" width={30} height={30} />
                 <div style={{ width: 10 }}></div>
-                <ContainerSubtitle>Hover mouse to preview effect</ContainerSubtitle>
+                <ContainerSubtitle>Hover mouse to preview effect</ContainerSubtitle> */}
             </ContainerRow>
         </Container>
+        <ContainerRow style={{ marginTop: -20 }}>
+            <div style={{ cursor: 'pointer', }}>
+                {muted ? <div onClick={() => setMuted(false)} style={{ display: 'flex', alignItems: 'center' }}>
+                    <FaVolumeMute size={22} color="#fff" style={{ marginRight: 10 }} />
+                    <ContainerSubtitle>Muted</ContainerSubtitle>
+                </div>
+                    :
+                    <div onClick={() => setMuted(true)} style={{ display: 'flex', alignItems: 'center' }}>
+                        <FaVolumeUp size={22} color="#fff" style={{ marginRight: 10 }} />
+                        <ContainerSubtitle>Mute</ContainerSubtitle>
+                    </div>}
+            </div>
+        </ContainerRow>
         <ContainerRow>
-            <TemplateContainer>
-                <Image src="/assets/previews/facecam.png" alt="" width={250} height={450} objectFit="cover" />
-                <TemplateTitle>Facecam</TemplateTitle>
-                <TemplateDescription>Highlight a streamers reaction to a clip.</TemplateDescription>
-            </TemplateContainer>
-            <TemplateContainer>
-                <Image src="/assets/previews/text.png" alt="" width={250} height={450} objectFit="cover" />
-                <TemplateTitle>Text Overlay</TemplateTitle>
-                <TemplateDescription>Text captions over top gameplay.</TemplateDescription>
-            </TemplateContainer>
             {renderTemplates()}
         </ContainerRow>
-        <div style={{height: '15vh'}} />
+        <div style={{ height: '15vh' }} />
     </>
 }
 
@@ -202,5 +254,6 @@ font-family: Roboto;
 font-style: italic;
 font-size: 13px;
 opacity: 0.6;
+width: 200px;
 `
 

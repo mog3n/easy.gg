@@ -6,16 +6,21 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { FaClock, FaEye, FaSearch, FaTimes } from "react-icons/fa";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { Header } from "../components/ui/Header";
 import { clipThumbnailUrlProxy, twitchClipProxy, userProfilePictureThumbnailProxy } from "../helpers/helpers";
+import { selectedTemplateState } from "../state/atoms/ui";
 import { useGetTwitchClip } from "../state/mutations/twitch";
 import { useGetClipMP4Data, useGetTwitchClipsFromBroadcasterID, useSearchTwitchCreators } from "../state/queries/twitch";
 import { TwitchClip, TwitchCreator } from "../types/twitchTypes";
+import { MakeTemplate } from "../types/ui";
 import { H1 } from "./export";
 
 const ImportPage: NextPage = (props) => {
     const router = useRouter();
+    const [selectedTemplate, setSelectedTemplate] = useRecoilState<MakeTemplate>(selectedTemplateState);
+
     const [selectedCreator, setSelectedCreator] = useState<TwitchCreator>();
     const [selectedClip, setSelectedClip] = useState<TwitchClip>();
 
@@ -44,15 +49,25 @@ const ImportPage: NextPage = (props) => {
             </HeaderBar>
             {memoizedVideoPlayer}
             <FlexCenterHorizontally>
-                <div style={{height: 20}}></div>
+                <div style={{ height: 20 }}></div>
                 <Button isLoading={getTwitchClipMutation.isLoading} onClick={async () => {
                     if (!getTwitchClipMutation.isLoading) {
                         const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: clipVideoData.data.data.ezLink });
                         const dataUrl = URL.createObjectURL(clipResp.data);
-                        router.push({
-                            pathname: '/create',
-                            query: { clip: dataUrl },
-                        });
+
+                        // check if user has already chosen a clip
+                        if (router.query.useTemplate) {
+                            router.push({
+                                pathname: selectedTemplate.redirect,
+                                query: { clip: dataUrl },
+                            });
+                        } else {
+                            router.push({
+                                pathname: '/create',
+                                query: { clip: dataUrl },
+                            });
+                        }
+
                     }
                 }} kind="secondary">Select Clip</Button>
             </FlexCenterHorizontally>
@@ -74,17 +89,17 @@ const ImportPage: NextPage = (props) => {
                     return <ClipPreviewContainer key={clip.id} onClick={() => setSelectedClip(clip)}>
                         <div><ClipPreviewImage src={`${clipThumbnailUrlProxy(clip.thumbnail_url)}`} style={{ width: 300 }} /></div>
                         <ClipPreviewRow>
-                            <div style={{opacity: 0.7}}>
-                                {new Date(clip.created_at).toLocaleString('en-US', {month: 'short', day: '2-digit', year: 'numeric'})}
+                            <div style={{ opacity: 0.7 }}>
+                                {new Date(clip.created_at).toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
                             </div>
-                            <FlexCenterVertically style={{opacity: 0.7}}>
-                                <div style={{marginRight: 10, display: 'flex', alignItems: 'center'}}>
-                                    <FaClock size={13} style={{marginRight: 5}}/>{Math.round(clip.duration)}
+                            <FlexCenterVertically style={{ opacity: 0.7 }}>
+                                <div style={{ marginRight: 10, display: 'flex', alignItems: 'center' }}>
+                                    <FaClock size={13} style={{ marginRight: 5 }} />{Math.round(clip.duration)}
                                 </div>
-                                <div style={{marginRight: 10, display: 'flex', alignItems: 'center'}}>
-                                    <FaEye  size={16} style={{marginRight: 5}}/> {clip.view_count.toLocaleString()}
+                                <div style={{ marginRight: 10, display: 'flex', alignItems: 'center' }}>
+                                    <FaEye size={16} style={{ marginRight: 5 }} /> {clip.view_count.toLocaleString()}
                                 </div>
-                               
+
                             </FlexCenterVertically>
                         </ClipPreviewRow>
                         <ClipPreviewTitle>{clip.title}</ClipPreviewTitle>
