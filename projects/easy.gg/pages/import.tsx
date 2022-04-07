@@ -17,6 +17,7 @@ import { TwitchClip, TwitchCreator } from "../types/twitchTypes";
 import { MakeTemplate } from "../types/ui";
 import { H1 } from "./export";
 import { Cell, Grid } from 'baseui/layout-grid';
+import { Spinner } from 'baseui/spinner';
 
 const ImportPage: NextPage = (props) => {
     const router = useRouter();
@@ -40,7 +41,7 @@ const ImportPage: NextPage = (props) => {
         }
     }, [selectedClip, clipVideoData.isSuccess])
 
-    if (selectedClip && clipVideoData.isSuccess) {
+    if (selectedClip && (clipVideoData.isSuccess || clipVideoData.isFetching)) {
         return <>
             <Header pageActive="Create" />
             <HeaderBar>
@@ -48,30 +49,42 @@ const ImportPage: NextPage = (props) => {
                 <HeaderText>{selectedClip.title}</HeaderText>
                 <div></div>
             </HeaderBar>
-            {memoizedVideoPlayer}
-            <FlexCenterHorizontally>
-                <div style={{ height: 20 }}></div>
-                <Button isLoading={getTwitchClipMutation.isLoading} onClick={async () => {
-                    if (!getTwitchClipMutation.isLoading) {
-                        const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: clipVideoData.data.data.ezLink });
-                        const dataUrl = URL.createObjectURL(clipResp.data);
+            {clipVideoData.isSuccess ? memoizedVideoPlayer : null}
+            {clipVideoData.isLoading ? <>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: 10, flexDirection: 'column' }}>
+                    <Spinner />
+                    <div style={{ height: 10 }} />
+                    Fetching clip...
+                </div>
+            </> : null}
 
-                        // check if user has already chosen a clip
-                        if (router.query.useTemplate) {
-                            router.push({
-                                pathname: selectedTemplate.redirect,
-                                query: { clip: dataUrl },
-                            });
-                        } else {
-                            router.push({
-                                pathname: '/create',
-                                query: { clip: dataUrl },
-                            });
+            {clipVideoData.isSuccess ? <>
+                <FlexCenterHorizontally>
+                    <div style={{ height: 20 }}></div>
+                    <Button isLoading={getTwitchClipMutation.isLoading} onClick={async () => {
+                        if (clipVideoData.isSuccess) {
+                            const clipResp = await getTwitchClipMutation.mutateAsync({ videoUrl: clipVideoData.data.data.ezLink });
+                            const dataUrl = URL.createObjectURL(clipResp.data);
+
+                            // check if user has already chosen a clip
+                            if (router.query.useTemplate) {
+                                router.push({
+                                    pathname: selectedTemplate.redirect,
+                                    query: { clip: dataUrl },
+                                });
+                            } else {
+                                router.push({
+                                    pathname: '/create',
+                                    query: { clip: dataUrl },
+                                });
+                            }
+
                         }
+                    }} kind="secondary">Select Clip</Button>
+                </FlexCenterHorizontally>
+            </> : null}
 
-                    }
-                }} kind="secondary">Select Clip</Button>
-            </FlexCenterHorizontally>
+
         </>
     }
 
@@ -116,16 +129,39 @@ const ImportPage: NextPage = (props) => {
 
     return <>
         <Header pageActive="Create" />
-        <div style={{height: 20}}></div>
+        <div style={{ height: 20 }}></div>
         <Grid>
-            <Cell span={[1, 4, 5]}><H1 style={{ fontSize: 32, margin: 0 }}>Search Twitch Creator</H1></Cell>
+            <Cell span={[1, 4, 5]}><H1 style={{ fontSize: 32, margin: 0 }}>Search Twitch</H1></Cell>
             <Cell skip={[0, 0, 2]} span={[0, 4, 4]}>
                 <Input
                     endEnhancer={<FaSearch size={16} />}
                     autoFocus
-                    placeholder="TenZ, pokimane, shroud..."
+                    placeholder="Search for creator or paste clip URL"
                     value={creatorSearchQuery}
-                    onChange={(evt) => setCreatorSearchQuery(evt.currentTarget.value)}
+                    onChange={(evt) => {
+                        if (evt.currentTarget.value.includes("https://")) {
+                            // probably a link
+                            setSelectedClip({
+                                broadcaster_id: '',
+                                broadcaster_name: '',
+                                url: evt.currentTarget.value,
+                                created_at: '',
+                                creator_id: '',
+                                creator_name: '',
+                                duration: 0,
+                                embed_url: '',
+                                game_id: '',
+                                id: '',
+                                language: '',
+                                thumbnail_url: '',
+                                title: '',
+                                video_id: '',
+                                view_count: 0
+                            })
+                        } else {
+                            setCreatorSearchQuery(evt.currentTarget.value)
+                        }
+                    }}
                 />
             </Cell>
 
@@ -133,14 +169,14 @@ const ImportPage: NextPage = (props) => {
 
         {searchQuery.data ? <UserSearchResults>
             <Grid>
-            {searchQuery.data.data.data.map(creator => {
-                return <UserSearchResultContainer key={creator.id} onClick={() => {
-                    setSelectedCreator(creator);
-                }}>
-                    <UserSearchResultProfileImg src={userProfilePictureThumbnailProxy(creator.thumbnail_url)} alt={creator.display_name} />
-                    <UserSearchResultName>{creator.display_name}</UserSearchResultName>
-                </UserSearchResultContainer>
-            })}
+                {searchQuery.data.data.data.map(creator => {
+                    return <UserSearchResultContainer key={creator.id} onClick={() => {
+                        setSelectedCreator(creator);
+                    }}>
+                        <UserSearchResultProfileImg src={userProfilePictureThumbnailProxy(creator.thumbnail_url)} alt={creator.display_name} />
+                        <UserSearchResultName>{creator.display_name}</UserSearchResultName>
+                    </UserSearchResultContainer>
+                })}
             </Grid>
         </UserSearchResults> : <></>}
     </>
