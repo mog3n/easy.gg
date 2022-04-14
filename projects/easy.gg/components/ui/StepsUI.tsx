@@ -1,12 +1,17 @@
+import { Button } from 'baseui/button';
+import { Grid } from 'baseui/layout-grid';
+import { toaster } from 'baseui/toast';
 import { useState } from 'react';
-import { FaArrowRight, FaCheck } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaCheck } from 'react-icons/fa';
+import styled from 'styled-components';
 import { StepsContainer, Container, ContainerLeft, ContainerRight, SingleStepContainer, SingleStepContainerDeselected, StepActiveIndicator, StepNumberLabel, StepLabel, StepInactiveIndicator } from '../../pages/facecam';
 
 export interface EditorStep {
     label: string;
     key: string;
+    isNextStepConditionSatisfied: () => boolean;
 }
-export type Steps = { [key:string]: EditorStep }
+export type Steps = { [key: string]: EditorStep }
 
 interface StepsUIProps {
     steps: EditorStep[],
@@ -18,15 +23,22 @@ interface StepsUIProps {
 
 export const StepsUI = (props: StepsUIProps) => {
     const [selectedEditorStep, setSelectedEditorStep] = useState<EditorStep>(props.steps[0]);
+    const [selectedStepIndex, setSelectedStepIndex] = useState<number>(0);
+
+    const onStepSelected = (step: EditorStep, index: number) => {
+        // Disable changing steps while rendering
+        if (!props.stepsDisabled) {
+            setSelectedEditorStep(step);
+            setSelectedStepIndex(index);
+            props.onStepSelected(step);
+        } else {
+            toaster.info(<>You cannot change steps during this time.</>, {
+                autoHideDuration: 3000,
+            })
+        }
+    }
 
     const renderEditorSteps = () => {
-        const onStepSelected = (step: EditorStep) => {
-            // Disable changing steps while rendering
-            if (!props.stepsDisabled) {
-                setSelectedEditorStep(step);
-            }
-            props.onStepSelected(step);
-        }
 
         return <>
             <StepsContainer>
@@ -49,7 +61,9 @@ export const StepsUI = (props: StepsUIProps) => {
                     } else if (isPreviousStep) {
                         // render checkmarks
                         return <>
-                            <SingleStepContainerDeselected key={step.key} onClick={() => onStepSelected(step)} style={{ justifyContent: 'space-between' }}>
+                            <SingleStepContainerDeselected key={step.key} onClick={() => {
+                                // onStepSelected(step, index)
+                            }} style={{ justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <StepInactiveIndicator />
                                     <div>
@@ -62,7 +76,9 @@ export const StepsUI = (props: StepsUIProps) => {
                         </>
                     } else {
                         return <>
-                            <SingleStepContainerDeselected key={step.key} onClick={() => onStepSelected(step)} style={{}}>
+                            <SingleStepContainerDeselected key={step.key} onClick={() => {
+                                // onStepSelected(step, index)
+                            }} style={{}}>
                                 <StepInactiveIndicator></StepInactiveIndicator>
                                 <div>
                                     <StepNumberLabel>Step {index + 1}</StepNumberLabel>
@@ -76,14 +92,58 @@ export const StepsUI = (props: StepsUIProps) => {
         </>
     }
 
+    const hasNextStep = props.steps.length !== (selectedStepIndex + 1);
+    const hasPreviousStep = selectedStepIndex !== 0;
+
+    const nextStepAllowed = hasNextStep && props.steps[selectedStepIndex].isNextStepConditionSatisfied();
+
     return <>
         <Container>
             <ContainerLeft>
                 {renderEditorSteps()}
             </ContainerLeft>
             <ContainerRight>
+
                 {props.onRenderPage(selectedEditorStep)}
+
+                <PrevNextButtonContainer>
+                    <Button kind="primary" onClick={() => {
+                        if (hasPreviousStep) {
+                            onStepSelected(props.steps[selectedStepIndex - 1], selectedStepIndex - 1);
+                        }
+                    }}
+                        disabled={!hasPreviousStep || props.stepsDisabled}
+                        startEnhancer={() => <FaArrowLeft />}
+                    >{hasPreviousStep ? props.steps[selectedStepIndex - 1].label : "Back"}</Button>
+                    <StepName>{selectedEditorStep.label}</StepName>
+                    <Button kind="primary" onClick={() => {
+                        if (hasNextStep) {
+                            onStepSelected(props.steps[selectedStepIndex + 1], selectedStepIndex + 1);
+                        }
+                    }}
+                        endEnhancer={() => <FaArrowRight />}
+                        disabled={!hasNextStep || !nextStepAllowed || props.stepsDisabled}
+                    >{hasNextStep ? props.steps[selectedStepIndex + 1].label : "Next Step"}</Button>
+                </PrevNextButtonContainer>
             </ContainerRight>
         </Container>
     </>
 }
+
+const StepName = styled.div`
+    font-family: Kanit;
+    font-size: 22px;
+`
+
+const PrevNextButtonContainer = styled.div`
+    position: sticky;
+    width: 100%;
+    align-items: center;
+    bottom: 0;
+    padding: 20px;
+    background-color: #212121;
+    display: flex;
+    min-width: 420px;
+    cursor: default;
+    justify-content: space-between;
+`

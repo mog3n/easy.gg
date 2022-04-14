@@ -460,12 +460,12 @@ export const SingleStepContainer = styled.div`
     align-items: center;
     background-color: #414141;
     margin: 5px;
-    cursor: pointer;
+    cursor: default;
     transition: 0.05s ease-in;
     border: 2px solid #fff;
     border-radius: 10px;
     &:hover{
-        border: 2px solid #fff;
+        /* border: 2px solid #fff; */
         /* background-color: #535353; */
     }
 `

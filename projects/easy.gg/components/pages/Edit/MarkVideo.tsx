@@ -146,7 +146,7 @@ export const MarkVideo = (props: MarkVideoProps) => {
     }, [videoFile, timelineWidth, soundEffect])
 
     return (
-        <div style={{ width: '100%' }} ref={containerRef}>
+        <div style={{ width: '100%', height: '100%' }} ref={containerRef}>
 
             {memoizedVideoPlayer}
 
@@ -268,13 +268,9 @@ export const MarkVideo = (props: MarkVideoProps) => {
                                 }
                             }> </div>
                         </div>
-
                     </div>
-
                     <div style={{ height: 20 }} />
-
                 </> : <></>}
-
         </div>
     )
 }

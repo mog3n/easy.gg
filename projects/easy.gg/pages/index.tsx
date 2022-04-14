@@ -4,11 +4,8 @@ import { useState } from "react";
 import { useRecoilState } from "recoil";
 import styled, { keyframes } from "styled-components";
 import { Header } from "../components/ui/Header";
-import { SelectVideoSourceModal } from "../components/ui/SelectVideoSourceModal";
 import { selectedTemplateState } from "../state/atoms/ui";
-import { MakeTemplate } from "../types/ui";
 import { Grid, Cell, ALIGNMENT } from 'baseui/layout-grid'
-import { toaster } from "baseui/toast";
 import { HomepageEffectsView } from "../components/pages/Homepage/HomepageComponents";
 
 
@@ -25,7 +22,7 @@ const Index: NextPage = () => {
             </HeaderBannerContainer>
         </Grid>
         <HomepageEffectsView />
-        <div style={{height: 100}}></div>
+        <div style={{height: 20}}></div>
         <HeroGroup>
             <Grid>
                 <Cell span={[2, 4, 8]}>
@@ -194,6 +191,11 @@ export const EffectIcon = styled.div`
     padding: 10px;
     padding-left: 15px;
     padding-right: 15px;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    &:hover {
+        background-color: #2a263e;
+    }
 
     border-radius: 10px 0 0 10px;
     & + & {
@@ -206,6 +208,9 @@ export const EffectIcon = styled.div`
 `
 export const EffectIconSelected = styled(EffectIcon)`
     background-color: #2800FF;
+    &:hover {
+        background-color: #2800FF;
+    }
 `
 export const EffectIconSingle = styled(EffectIcon)`
     border-radius: 10px;

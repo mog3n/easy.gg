@@ -30,8 +30,7 @@ const HeaderItems = styled.div`
 
 const HeaderLogo = styled.img`
     cursor: pointer;
-    width: 43px;
-    margin: 10px;
+    width: 58px;
     @media (max-width: 600px) {
         width: 52px;
         margin: 0;
