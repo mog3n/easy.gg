@@ -23,6 +23,6 @@ export const handleAPIError = (e: unknown, errorMessage: string, res: NextApiRes
 export const axiosTwitch = axios.create({
     headers: {
         "Client-Id": "8fdbbgpdexxwufebasf2kg28a3bszz",
-        "Authorization": `Bearer paa1n5cebdvs7moqsaki97k4eoj2tl`,
+        "Authorization": `Bearer x8ja1ve0vlyzwwyvutvtdkanurhdk6`,
     }
 })

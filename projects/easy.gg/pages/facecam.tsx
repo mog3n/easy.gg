@@ -96,17 +96,19 @@ const Facecam: NextPage = () => {
     const renderFaceCamCropTool = () => {
         return <>
             <CropRectangleUI
-                onMouseDown={(mouseEvt) => mouseEvt.preventDefault()}
+                // onMouseDown={(mouseEvt) => mouseEvt.preventDefault()}
                 style={{
                     width: faceCrop.width,
                     height: faceCrop.height,
                     transform: `translateX(${faceCrop.x}px) translateY(${faceCrop.y}px)`,
+                    cursor: 'move',
                 }}
             />
             <CropCornerUI
                 onMouseDown={(mouseEvt) => mouseEvt.preventDefault()}
                 style={{
                     transform: `translateX(${faceCrop.x + faceCrop.width - 10}px) translateY(${faceCrop.y + faceCrop.height - 10}px)`,
+                    cursor: 'nwse-resize'
                 }}
             />
         </>
@@ -167,50 +169,100 @@ const Facecam: NextPage = () => {
                     // Handle resizing of face
                     if (isResizingFaceCrop) {
                         const { clientX: cx, clientY: cy } = mouseEvt;
-                        const { offsetTop, offsetLeft } = videoRef.current;
+                        const { offsetTop, offsetLeft, clientWidth, clientHeight } = videoRef.current;
                         const clientX = cx - offsetLeft;
                         const clientY = cy - offsetTop;
                         const faceCropWidth = clientX - faceCrop.x + 7.5;
                         const faceCropHeight = clientY - faceCrop.y + 7.5
+
+                        const absoluteWidth = faceCrop.x + faceCropWidth + offsetLeft;
+                        const absoluteHeight = faceCrop.y + faceCropHeight + offsetTop;
+
+                        const maxAllowedWidth = offsetLeft + clientWidth;
+                        const maxAllowedHeight = offsetTop + clientHeight;
+
+                        const normalizedWidth = absoluteWidth < maxAllowedWidth ? faceCropWidth : faceCrop.width;
+                        const normalizedHeight = absoluteHeight < maxAllowedHeight ? faceCropHeight : faceCrop.height;
+
                         setFaceCrop({
                             x: Math.round(faceCrop.x),
                             y: Math.round(faceCrop.y),
-                            width: Math.round(faceCropWidth),
-                            height: Math.round(faceCropHeight)
+                            width: Math.round(normalizedWidth),
+                            height: Math.round(normalizedHeight)
                         })
                     }
                     // Handle resizing of video
                     if (isResizingVideoCrop) {
                         const { clientX: cx, clientY: cy } = mouseEvt;
-                        const { offsetTop, offsetLeft } = videoRef.current;
+                        const { offsetTop, offsetLeft, clientWidth, clientHeight } = videoRef.current;
                         const clientX = cx - offsetLeft;
                         const clientY = cy - offsetTop;
 
                         const width = clientX - videoCrop.x + 7.5;
-                        setVideoCrop({
-                            x: Math.round(videoCrop.x),
-                            y: Math.round(videoCrop.y),
-                            width: Math.round(width),
-                            height: Math.round(width * heightRatio)
-                        })
+                        const height = width * heightRatio;
+
+                        const absoluteWidth = videoCrop.x + width + offsetLeft;
+                        const absoluteHeight = videoCrop.y + height + offsetTop;
+                        const maxAllowedWidth = offsetLeft + clientWidth;
+                        const maxAllowedHeight = offsetTop + clientHeight;
+
+                        if (absoluteWidth < maxAllowedWidth && absoluteHeight < maxAllowedHeight) {
+                            setVideoCrop({
+                                x: Math.round(videoCrop.x),
+                                y: Math.round(videoCrop.y),
+                                width: Math.round(width),
+                                height: Math.round(height)
+                            })
+                        }
+
                     }
                     //  Handle X Y movement of facecrop
                     if (isMovingFaceCrop) {
                         const { clientX, clientY } = mouseEvt;
+                        const { clientLeft, clientTop, clientWidth, clientHeight } = videoRef.current;
                         const x = Math.min(Math.max(clientX - mouseStartPos.x, 0), clientX + faceCrop.width);
                         const y = Math.min(Math.max(clientY - mouseStartPos.y, 0), clientY + faceCrop.height);
+
+                        const windowMaxX = Math.max(x + faceCrop.width, 0);
+                        const windowMaxY = Math.max(y + faceCrop.height, 0);
+
+                        const maxAllowedX = clientLeft + clientWidth;
+                        const maxAllowedY = clientLeft + clientHeight;
+
+                        console.log(windowMaxX, windowMaxY, maxAllowedX, maxAllowedY);
+
+                        const normalizedX = (windowMaxX < maxAllowedX) ? x : faceCrop.x;
+                        const normalizedY = (windowMaxY < maxAllowedY) ? y : faceCrop.y;
+
                         setFaceCrop({
-                            x, y,
+                            x: normalizedX, y: normalizedY,
                             width: faceCrop.width,
                             height: faceCrop.height,
                         })
+
+
                     }
                     // Handle X Y movement of video crop
                     if (isMovingVideoCrop) {
                         const { clientX, clientY } = mouseEvt;
+                        const { clientWidth, clientHeight, clientLeft: vx, clientTop: vy } = videoRef.current;
+                        const x = Math.max(Math.round(clientX - mouseStartPos.x), 0)
+                        const y = Math.max(Math.round(clientY - mouseStartPos.y), 0);
+                        
+                        const windowMaxX = vx + x + videoCrop.width;
+                        const windowMaxY = vy + y + videoCrop.height;
+
+                        const maxAllowedX = vx + clientWidth;
+                        const maxAllowedY = vy + clientHeight;
+
+                        console.log(windowMaxX, windowMaxY, maxAllowedX, maxAllowedY);
+
+                        const normalizedX = (windowMaxX < maxAllowedX) ? x : videoCrop.x;
+                        const normalizedY = (windowMaxY < maxAllowedY) ? y : videoCrop.y;
+
                         setVideoCrop({
-                            x: Math.round(clientX - mouseStartPos.x),
-                            y: Math.round(clientY - mouseStartPos.y),
+                            x: normalizedX,
+                            y: normalizedY,
                             width: Math.round(videoCrop.width),
                             height: Math.round(videoCrop.height),
                         })
