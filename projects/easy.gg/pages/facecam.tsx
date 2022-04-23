@@ -82,12 +82,14 @@ const Facecam: NextPage = () => {
                     width: videoCrop.width,
                     height: videoCrop.height,
                     transform: `translateX(${videoCrop.x}px) translateY(${videoCrop.y}px)`,
+                    cursor: 'move',
                 }}
             />
             <CropCornerUI
                 onMouseDown={(mouseEvt) => mouseEvt.preventDefault()}
                 style={{
                     transform: `translateX(${videoCrop.x + videoCrop.width - 10}px) translateY(${videoCrop.y + videoCrop.height - 10}px)`,
+                    cursor: 'nwse-resize',
                 }}
             />
         </>
@@ -190,6 +192,7 @@ const Facecam: NextPage = () => {
                             width: Math.round(normalizedWidth),
                             height: Math.round(normalizedHeight)
                         })
+                        return;
                     }
                     // Handle resizing of video
                     if (isResizingVideoCrop) {
@@ -214,7 +217,7 @@ const Facecam: NextPage = () => {
                                 height: Math.round(height)
                             })
                         }
-
+                        return;
                     }
                     //  Handle X Y movement of facecrop
                     if (isMovingFaceCrop) {
@@ -269,27 +272,40 @@ const Facecam: NextPage = () => {
                     }
                 }
 
-
             }}
             onMouseUp={(mouseEvt) => {
-                setIsMovingFaceCrop(false);
-                setIsMovingVideoCrop(false);
-                setIsResizingVideoCrop(false);
-                setIsResizingFaceCrop(false);
-
-                // Update the aspect ratio of the video stream portion
-                if (isResizingFaceCrop) {
-                    const ratio = (16 - ((9 * faceCrop.height) / faceCrop.width)) / 9;
-                    if (ratio !== heightRatio) {
+                if (videoRef.current) {
+                    const { clientHeight, clientWidth } = videoRef.current;
+                    setIsMovingFaceCrop(false);
+                    setIsMovingVideoCrop(false);
+                    setIsResizingVideoCrop(false);
+                    setIsResizingFaceCrop(false);
+    
+                    // Update the aspect ratio of the video stream portion
+                    if (isResizingFaceCrop) {
+    
+                        const ratio = (16 - ((9 * faceCrop.height) / faceCrop.width)) / 9;
                         setHeightRatio(ratio);
-                        setVideoCrop({
-                            x: Math.round(videoCrop.x),
-                            y: Math.round(videoCrop.y),
-                            width: Math.round(faceCrop.width),
-                            height: Math.round(faceCrop.width * ratio)
-                        })
+
+                        // center the video crop automatically
+                        const height = clientHeight;
+                        const width = clientHeight * 1/ratio;
+                        const xPos = (clientWidth / 2) - (width/2);
+                        const yPos = 0;
+                       
+                        if (ratio !== heightRatio) {
+                            setVideoCrop({
+                                x: Math.round(xPos),
+                                y: Math.round(yPos),
+                                width: Math.round(width),
+                                height: Math.round(height)
+                            })
+                        }
+    
+                        
                     }
                 }
+                
             }}
         >
             {showVideoCrop ? renderVideoCropTool() : null}
