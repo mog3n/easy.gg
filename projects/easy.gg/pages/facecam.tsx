@@ -24,6 +24,14 @@ interface MousePos {
     y: number
 }
 
+const editorSteps: { [key: string]: EditorStep } = {
+    "start": { label: "Start", key: 'start', isNextStepConditionSatisfied: () => true, },
+    "trim": { label: "Trim Video", key: 'trim', isNextStepConditionSatisfied: () => true, },
+    "face": { label: "Face Crop", key: 'face', isNextStepConditionSatisfied: () => true, },
+    "gameplay": { label: "Video Crop", key: 'gameplay', isNextStepConditionSatisfied: () => true, },
+    "render": { label: "Render", key: 'render', isNextStepConditionSatisfied: () => true, }
+}
+
 
 const Facecam: NextPage = () => {
     const router = useRouter();
@@ -33,7 +41,7 @@ const Facecam: NextPage = () => {
 
     const [mouseStartPos, setMouseStartPos] = useState<MousePos>({ x: 0, y: 0 })
 
-    const [selectedEditorStep, setSelectedEditorStep] = useState<EditorStep>({ label: '', key: 'start' });
+    const [selectedEditorStep, setSelectedEditorStep] = useState<EditorStep>(editorSteps['start']);
 
     const [showFaceCrop, setShowFaceCrop] = useState(false);
     const [isMovingFaceCrop, setIsMovingFaceCrop] = useState(false);
@@ -41,6 +49,10 @@ const Facecam: NextPage = () => {
     const [faceCrop, setFaceCrop] = useState<CropPosition>({
         x: 0, y: 0, width: 100, height: 100
     })
+
+    const [trimLeft, setTrimLeft] = useState(5);
+    const [videoDuration , setVideoDuration] = useState(25);
+    const [trimRight, setTrimRight] = useState(20);
 
     const [showVideoCrop, setShowVideoCrop] = useState(false);
     const [isMovingVideoCrop, setIsMovingVideoCrop] = useState(false);
@@ -68,12 +80,12 @@ const Facecam: NextPage = () => {
         setClipProxyUrl(blobUrl);
     }, [router]);
 
-    const editorSteps: { [key: string]: EditorStep } = {
-        "start": { label: "Start", key: 'start' },
-        "face": { label: "Face Crop", key: 'face' },
-        "gameplay": { label: "Video Crop", key: 'gameplay' },
-        "render": { label: "Render", key: 'render' }
-    }
+    useEffect(() => {
+        if(videoRef.current && videoRef.current.duration) {
+            setTrimRight(videoRef.current.duration);
+            setVideoDuration(videoRef.current.duration);
+        }
+    }, [videoRef, setTrimRight])
 
     const renderVideoCropTool = () => {
         return <>
@@ -114,6 +126,12 @@ const Facecam: NextPage = () => {
                 }}
             />
         </>
+    }
+    const renderTrimTool = () => {
+
+        return <div style={{width: '100%'}}>
+            
+        </div>
     }
 
     const renderToolOverlay = () => {
@@ -232,8 +250,6 @@ const Facecam: NextPage = () => {
                         const maxAllowedX = clientLeft + clientWidth;
                         const maxAllowedY = clientLeft + clientHeight;
 
-                        console.log(windowMaxX, windowMaxY, maxAllowedX, maxAllowedY);
-
                         const normalizedX = (windowMaxX < maxAllowedX) ? x : faceCrop.x;
                         const normalizedY = (windowMaxY < maxAllowedY) ? y : faceCrop.y;
 
@@ -257,8 +273,6 @@ const Facecam: NextPage = () => {
 
                         const maxAllowedX = vx + clientWidth;
                         const maxAllowedY = vy + clientHeight;
-
-                        console.log(windowMaxX, windowMaxY, maxAllowedX, maxAllowedY);
 
                         const normalizedX = (windowMaxX < maxAllowedX) ? x : videoCrop.x;
                         const normalizedY = (windowMaxY < maxAllowedY) ? y : videoCrop.y;
@@ -376,6 +390,8 @@ const Facecam: NextPage = () => {
                         setShowVideoCrop(true);
                         break;
                     case "render":
+                        setShowFaceCrop(false);
+                        setShowVideoCrop(false);
                         break;
                     default:
                         break;
@@ -471,6 +487,10 @@ const Facecam: NextPage = () => {
                     </div>
                 </>
                 break;
+            case "trim":
+                return <>
+                    {renderTrimTool()}
+                </>
             default:
                 break;
         }

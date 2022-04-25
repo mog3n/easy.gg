@@ -130,12 +130,12 @@ export const StepsUI = (props: StepsUIProps) => {
     </>
 }
 
-const StepName = styled.div`
+export const StepName = styled.div`
     font-family: Kanit;
     font-size: 22px;
 `
 
-const PrevNextButtonContainer = styled.div`
+export const PrevNextButtonContainer = styled.div`
     position: sticky;
     width: 100%;
     align-items: center;
